@@ -1,6 +1,6 @@
 {
   "name": "node-web-dev",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "\"# node-web-dev\"",
   "main": "index.js",
   "scripts": {

@@ -40,7 +40,7 @@ class ServerApp {
             files: options.files,
             index: options.index,
             middleware: (req, res, next) => middleware(req, res, next, dev)
-        });
+        },()=>dev.emit('onReady'));
     }
 
     /**

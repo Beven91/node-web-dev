@@ -1,6 +1,6 @@
 {
   "name": "node-web-dev",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "\"# node-web-dev\"",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "browser-sync": "^2.14.3",
     "eventemitter3": "^1.2.0",
     "gaze": "^1.1.1",
-    "grunt-ls-freemarker": "^1.1.7",
+    "grunt-ls-freemarker": "^1.1.8",
     "http-proxy": "^1.14.0"
   },
   "devDependencies": {

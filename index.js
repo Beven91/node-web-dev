@@ -36,7 +36,7 @@ const Compiler = require('./compiler/compiler.js');
 const FtlCompiler = require('./compiler/compiler.freemarker.js');
 const DevWatch = require('./watch/watch.js');
 //路由管理对象
-const RouteContainer = require('./routes.js');
+const RouteContainer = require('./middleware/routes.js');
 
 const EventEmitter = require('eventemitter3');
 

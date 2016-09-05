@@ -5,7 +5,7 @@
  * 描述：当在编辑指定视图文件时，本地会根据改动的视图名称来自动刷新网页
  */
 
-const {GAZE} = require('gaze');
+const {Gaze} = require('gaze');
 
 const Routes = require('../middleware/routes.js');
 
@@ -20,7 +20,7 @@ class DevWatch {
      */
     start(projects) {
         this.tryClose();
-        let gaze = this.gaze = new GAZE(projects);
+        let gaze = this.gaze = new Gaze(projects);
         gaze.on('changed', (...args) => this.onChanged(...args));
     }
 

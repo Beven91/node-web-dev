@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-web-dev": "^1.0.0"
+    "node-web-dev": "^1.0.1"
   }
 }

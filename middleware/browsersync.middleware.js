@@ -29,7 +29,7 @@ class BrowserSyncMiddleware {
      */
     constructor(dev) {
         this.dev = dev;
-        let proxy = httpProxy.createProxyServer(dev.options.proxy);
+        let proxy =this.proxy= httpProxy.createProxyServer(dev.options.proxy);
         this.options = Object.assign({}, defaultOptions, dev.options.local);
         proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
         proxy.on("error", (...args) => this.onProxyResponseError(...args));
@@ -139,7 +139,7 @@ class BrowserSyncMiddleware {
      * @param res {IncomingMessage}对象
      */
     doResponse(data, res) {
-        res.write(data);
+        res.write(data||"返回空内容？");
         res.end();
     }
 
@@ -147,7 +147,7 @@ class BrowserSyncMiddleware {
      * 执行error返回
      */
     doErrorResponse(data, res) {
-        res.write(data);
+        res.write(data||"返回空内容？");
         res.end();
     }
 
@@ -155,7 +155,7 @@ class BrowserSyncMiddleware {
      * 发起一个代理请求
      */
     doProxyHttpRequest(req, res) {
-        proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+        this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
     }
 
     /**

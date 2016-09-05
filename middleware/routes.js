@@ -11,6 +11,9 @@ class RouteContainer {
 
     constructor(file) {
         this.routeMap = require(file);
+        if(this.routeMap==null){
+            throw new Error(`没有的取到路由${file}`);
+        }
     }
 
     /**

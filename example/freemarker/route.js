@@ -1,3 +1,4 @@
+const path = require('path');
 const routes ={
     "/":{
         "view":"site/home.ftl",
@@ -13,6 +14,7 @@ function routeRender(routes){
         //初始化视图根目录
         route.viewsDir =path.join(__dirname,'projects','websites','views');
     }
+    return routes;
 }
 
 module.exports = routeRender(routes);

@@ -87,7 +87,7 @@ class BrowserSyncMiddleware {
         let route = this.dev.routes.match(url);
         this.dev.emit('onResponse', content, req, res);
         let oRoute = this.dev.emit('match', route, url, req, res);
-        route = oRoute === undefined ? route : oRoute;
+        route = oRoute === false ? route : oRoute;
         if (route) {
             this.doViewResponse(content, req, res, route);
         } else {
@@ -126,7 +126,7 @@ class BrowserSyncMiddleware {
                 throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
             }
             let newData = this.dev.emit('dataWrap', data);
-            data = newData === undefined ? data : newData;
+            data = newData === false ? data : newData;
             compiler.compile(view, data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res));
         } catch (ex) {
             this.doErrorResponse(ex.stack, res);

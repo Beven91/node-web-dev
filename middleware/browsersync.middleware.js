@@ -29,7 +29,7 @@ class BrowserSyncMiddleware {
      */
     constructor(dev) {
         this.dev = dev;
-        let proxy =this.proxy= httpProxy.createProxyServer(dev.options.proxy);
+        let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
         this.options = Object.assign({}, defaultOptions, dev.options.local);
         proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
         proxy.on("error", (...args) => this.onProxyResponseError(...args));
@@ -86,7 +86,7 @@ class BrowserSyncMiddleware {
         let url = req.originalUrl;
         let route = this.dev.routes.match(url);
         this.dev.emit('onResponse', content, req, res);
-        let oRoute = this.dev.emit('match', route,url, req, res);
+        let oRoute = this.dev.emit('match', route, url, req, res);
         route = oRoute === undefined ? route : oRoute;
         if (route) {
             this.doViewResponse(content, req, res, route);
@@ -139,7 +139,7 @@ class BrowserSyncMiddleware {
      * @param res {IncomingMessage}对象
      */
     doResponse(data, res) {
-        res.write(data||"返回空内容？");
+        res.write(data || "返回空内容？");
         res.end();
     }
 
@@ -147,7 +147,21 @@ class BrowserSyncMiddleware {
      * 执行error返回
      */
     doErrorResponse(data, res) {
-        res.write(data||"返回空内容？");
+        let content  = data || "返回空内容？";
+        let htmls = [
+            '<html>',
+            '   <head>',
+            '       <meta charset="UTF-8">',
+            '       <title>compile error</title>',
+            '   </head>',
+            '   <body>',
+            '       <code style="white-space:pre;">',
+            content.replace(/\n/g,'</br>'),
+            '       </code>',
+            '   </body>',
+            '</html>'
+        ];
+        res.write(htmls.join(''));
         res.end();
     }
 

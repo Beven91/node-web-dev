@@ -28,7 +28,7 @@ class DevWatch {
      * 当指定文件发生改变时
      */
     onChanged(filepath) {
-        let route = Routes.findByView(filepath);
+        let route = this.dev.routes.findByView(filepath);
         if(route){
             this.dev.serverApp.redirect(route.url);
         }

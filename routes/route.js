@@ -11,7 +11,7 @@ class RouteContainer {
 
     constructor(file) {
         this.routeMap = require(file);
-        if(this.routeMap==null){
+        if (this.routeMap == null) {
             throw new Error(`没有的取到路由${file}`);
         }
     }
@@ -29,7 +29,7 @@ class RouteContainer {
     findByView(view) {
         let routes = this.routeMap;
         let keys = Object.keys(routes);
-        let k = keys.find((k) => view.indexOf(routes[k].view) > -1);
+        let k = keys.find((k) => view.indexOf(routes[k].view.replace(/\//g,'\\')) > -1);
         let route = routes[k];
         if (route) {
             route.url = k;

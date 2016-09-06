@@ -88,7 +88,9 @@ class BrowserSyncMiddleware {
         let next = req.originMiddlewareChain;
         let url = req.originalUrl;
         let route = this.dev.routes.match(url);
-        let context = {route:route};
+        let context = {
+            route: route
+        };
         this.dev.emit('onResponse', content, req, res);
         this.dev.emit('match', context, url, req, res);
         route = context.route;
@@ -121,11 +123,15 @@ class BrowserSyncMiddleware {
     doViewResponse(content, req, res, route) {
         try {
             let data = this.getJson(content, route);
-            let {view} = route;
+            let {
+                view
+            } = route;
             let options = {
                 views: route.viewsDir
             }
-            let context = {data: data };
+            let context = {
+                data: data
+            };
             let compiler = CompilerFactory.getCompiler(view, options);
             if (null == compiler) {
                 throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
@@ -184,15 +190,14 @@ class BrowserSyncMiddleware {
      * 获取返回的数据
      */
     getJson(content, route) {
-        let data = {};
+        let data = null;
         try {
-            data = JSON.parse(content);
-        } catch (ex) {
-            if (this.options.local) {
-                data = this.getLocalMock(route);
-            } else {
-                throw ex;
-            }
+            data = JSON.parse(content)
+        } finally {
+
+        }
+        if (data == null && this.options.local) {
+            data = this.getLocalMock(route);
         }
         return data;
     }

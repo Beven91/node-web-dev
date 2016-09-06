@@ -76,7 +76,9 @@
       }
      
       var dev = new DynamicViewProjectDev(options);
+      
       dev.on('dataWrap', (context) =>context.data.user={name:'ss',age:xxxx});
+      
       dev.startup();
       
 ### 六、参数解释
@@ -182,6 +184,8 @@ ES6:
          
          
 ES5:
+
+
          var Compiler = require('node-web-dev').Compiler;
          
 	 function JspCompiler(){

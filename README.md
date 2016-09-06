@@ -161,9 +161,9 @@
 
 ### 八、定制编译器
 
+ES6:
+
          var Compiler = require('node-web-dev').Compiler;
-         
-         es6:
          
          class JspCompiler extends Compiler{
          	
@@ -177,11 +177,14 @@
          	}
          }
          
+         //注册到编译容器
          Compiler.register(new JspCompiler());
          
-         es5:
          
-         function JspCompiler(){
+ES5:
+         var Compiler = require('node-web-dev').Compiler;
+         
+	 function JspCompiler(){
             
             Compiler.call(this,'.jsp');
             
@@ -193,6 +196,7 @@
          	callback(error,results);
          }
          
+          //注册到编译容器
          Compiler.register(new JspCompiler());
 
 ### 九、开源许可

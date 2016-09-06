@@ -56,33 +56,18 @@
      var DynamicViewProjectDev = require('node-web-dev').DynamicViewProjectDev;	
 	
      var options = {
-        //静态资源服务站点配置
         server: {
-            //服务器根目录
             "server": "../webapp/", 
-            //要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
             "files": ['../webapp/**/*.css', '../webapp/**/*.js'], 
-            //网站默认启动路径 默认为 /
             "index": "/", 
         },
-        //代理配置
         proxy: {
-            //mock api的url地址 其他参见 http-proxy
             target: 'http://10.21.11.161:8010' 
         },
-        //本地mock配置
         local: {
-            /*
-              本地mock模式，
-                   online: 所有接口使用在线数据，
-                     auto: 优先从代理获取数据,当获取失败，使用本地路由定义的数据,
-                    local: 所有接口都使用本地,
-              existsLocal: 当在本地置有路由则使用本地的，否则使用在线的	
-            */
             local: 'auto', 
-            localDir: path.join(__dirname, '../../../mock/') //如果local:true时，本地mock数据的存放目录
+            localDir: path.join(__dirname, '../../../mock/') 
         },
-        //后端项目要监听的项目目录 指定目录下指定文件变更时，会通知客户端浏览器自动刷新
         projects: [
             path.join(grunt.projectPath, '../account/src/main/webapp/WEB-INF/views/**/*.ftl'),
             path.join(grunt.projectPath, '../search/src/main/resources/ftl/**/*.ftl'),
@@ -107,6 +92,15 @@
             --- "index": 网站默认启动路径 例如: /
         
         proxy:  mock接口服务器地址，详细设置参照: [http-proxy](https://github.com/nodejitsu/node-http-proxy "http-proxy")
+        
+        local:  
+             ---mode   本地mock模式，
+                            'online'--> 所有接口使用在线数据，
+                            'auto'-->优先从代理获取数据,当获取失败，使用本地路由定义的数据,
+                            'local'--> 所有接口都使用本地,   
+                            'existsLocal'--> 当在本地置有路由则使用本地的，否则使用在线的   
+        
+             ---localDir //本地mock数据的存放目录
         
         projects: 要监听的后端项目，通常用于指定在后端项目中视图改变时，自动刷新浏览器
                     例如: ['./websites/src/main/web-inf/views/**/*.ftl']

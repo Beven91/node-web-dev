@@ -17,7 +17,7 @@ const CompilerFactory = require('../compiler/compiler.js');
 
 //中间件默认配置数据
 const defaultOptions = {
-    local: true, //如果在使用在线接口获取数据出现异常，或者 当在线接口返回无效数据，时，使用本地Mock数据 默认 true
+    mode: 'auto', //本地mock模式，online:所有接口使用在线数据，auto:当在线获取失败，使用本地,local:所有接口都使用本地,existsLocal:当在本地配置有路由则使用本地的，否则使用在线的
     localDir: '' //如果local:true时，本地mock数据的存放目录
 }
 
@@ -29,13 +29,10 @@ class BrowserSyncMiddleware {
      */
     constructor(dev) {
         this.dev = dev;
-        this.proxyable = (dev.options.proxy || {}).enable;
-        if (this.proxyable) {
-            let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
-            this.options = Object.assign({}, defaultOptions, dev.options.local);
-            proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
-            proxy.on("error", (...args) => this.onProxyResponseError(...args));
-        }
+        this.options = Object.assign({}, defaultOptions, dev.options.local);
+        let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
+        proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
+        proxy.on("error", (...args) => this.onProxyResponseError(...args));
     }
 
     /**
@@ -45,15 +42,11 @@ class BrowserSyncMiddleware {
      * @param next 后续调用链 
      */
     onReceieveRequest(req, res, next) {
-        if (this.isCustomRequest()) {
-            let content = "";
-            //设置next函数引用
-            req.originMiddlewareChain = next;
-            //请求mock数据
-            this.doProxyHttpRequest(req, res);
-        } else {
-            next();
-        }
+        let content = "";
+        //设置next函数引用
+        req.originMiddlewareChain = next;
+        //请求mock数据
+        this.doProxyHttpRequest(req, res);
     }
 
     /**
@@ -179,7 +172,7 @@ class BrowserSyncMiddleware {
      * 发起一个代理请求
      */
     doProxyHttpRequest(req, res) {
-        if (this.proxyable) {
+        if (this.isRemotable(req)) {
             this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
         } else {
             this.onProxyRespnoseEnd(null, req, res);
@@ -196,7 +189,7 @@ class BrowserSyncMiddleware {
         } finally {
 
         }
-        if (data == null && this.options.local) {
+        if (data == null && this.options.mode != 'online') {
             data = this.getLocalMock(route);
         }
         return data;
@@ -218,8 +211,15 @@ class BrowserSyncMiddleware {
     /**
      * 判断当前请求是否需要进入托管处理
      */
-    isCustomRequest(req) {
-        return true;
+    isRemotable(req) {
+        let url = req.originalUrl;
+        let route = this.dev.routes.match(url);
+        let mode = this.options.mode;
+        if (mode == "local" || mode == 'existsLocal' && route) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 

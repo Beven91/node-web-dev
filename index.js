@@ -23,7 +23,7 @@
         target: '' //mock api的url地址 其他参见 http-proxy
     },
     local: {
-        local: true,//如果在使用在线接口获取数据出现异常，或者 当在线接口返回无效数据，时，使用本地Mock数据 默认 true
+        mode: 'auto', //本地mock模式，online:所有接口使用在线数据，auto:当在线获取失败，使用本地,local:所有接口都使用本地,existsLocal:当在本地配置有路由则使用本地的，否则使用在线的
         localDir: path.join(__dirname, '../../mock/') //如果local:true时，本地mock数据的存放目录
     },
     projects: [

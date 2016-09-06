@@ -88,8 +88,8 @@
         *
 Where
 
-  * **options** defines connection data
-    * **options.pool** if set to `true` uses pooled connections (defaults to `false`), otherwise creates a new connection for every e-mail.
+  * **server** 使用的是browser-sync服务
+    * **server.server** if set to `true` uses pooled connections (defaults to `false`), otherwise creates a new connection for every e-mail.
     * 
   
                      

@@ -42,7 +42,7 @@
     
 ### 三、环境要求
 
-    1. nodejs v6.2+  (目前使用es6预发所写，暂时不打算转换成es5)
+    1. nodejs v6.2+  (目前使用es6语法所写，暂时不打算转换成es5)
     
     2. jdk  (在使用freemakre 需要依赖于jdk) 安装代价不大
     
@@ -56,13 +56,17 @@
      let options = {
         //静态资源服务站点配置
         server: {
-            "server": "../webapp/", //服务器根目录
-            "files": ['../webapp/**/*.css', '../webapp/**/*.js'], //要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
-            "index": "/", //网站默认启动路径 默认为 /
+            //服务器根目录
+            "server": "../webapp/", 
+            //要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
+            "files": ['../webapp/**/*.css', '../webapp/**/*.js'], 
+            //网站默认启动路径 默认为 /
+            "index": "/", 
         },
         //代理配置
         proxy: {
-            target: 'http://10.21.11.161:8010' //mock api的url地址 其他参见 http-proxy
+            //mock api的url地址 其他参见 http-proxy
+            target: 'http://10.21.11.161:8010' 
         },
         //本地mock配置
         local: {

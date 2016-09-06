@@ -84,7 +84,7 @@
 参数：
 
   * **server** 使用的是browser-sync服务
-        * **server.server**  前段静态资源网站服务器根目录 例如 "../webapp/"
+        * **server.server** 前段静态资源网站服务器根目录 例如 "../webapp/"
         *
 
   * **server** 使用的是browser-sync服务

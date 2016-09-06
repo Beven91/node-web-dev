@@ -87,13 +87,48 @@
         ],
         //本地mock路由数据装载js或者json
         route: path.join(__dirname, '../../../routes/pc.route.js')
-     }
-    //创建mock开发服务对象
-    let dev = new DynamicViewProjectDev(options);
-    //包裹warp数据
-    dev.on('dataWrap', (context) =>context.data = Mock.mock(context.data));
-    //启动
-    dev.startup();
+      }
+      //创建mock开发服务对象
+      let dev = new DynamicViewProjectDev(options);
+      //包裹warp数据
+      dev.on('dataWrap', (context) =>context.data = Mock.mock(context.data));
+      //启动
+      dev.startup();
+      
+### 六、参数解释
+	
+	##server: 使用的是browser-sync服务，
+            --- "server": 前段静态资源网站服务器根目录 例如 "../webapp/",
+            --- "files":  要监听的文件或者目录，文件改变时，会自动同步通常用于css或者js
+                          例如:['../webapp/**/*.css', '../webapp/**/*.js'], 
+            --- "index": 网站默认启动路径 例如: /
+        
+        ##proxy:  mock接口服务器地址，详细设置参照: [http-proxy](https://github.com/nodejitsu/node-http-proxy "http-proxy")
+        
+        ##projects: 要监听的后端项目，通常用于指定在后端项目中视图改变时，自动刷新浏览器
+                    例如: ['./websites/src/main/web-inf/views/**/*.ftl']
+        ##route:    本地mock使用的路由装载js或者json
+                    例如: './routes/route.js'
+                    
+                     route.js:
+                     
+                     module.exports = {
+                     	"/":{
+                     		view:'site/home.ftl',
+                     		dir:'websites',
+                     		viewsDir:'./websites/src/main/web-inf/views' //这个viewsDir可以使用js代码批量生成
+                     	}
+                     }
+                     
+                     
+        
+        
 
-### 三、开源许可
+### 七、事件
+
+        
+
+### 八、定制编译器
+
+### 九、开源许可
 基于 [MIT License](http://zh.wikipedia.org/wiki/MIT_License) 开源，使用代码只需说明来源，或者引用 [license.txt](https://github.com/sofish/typo.css/blob/master/license.txt) 即可。

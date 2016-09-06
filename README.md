@@ -72,14 +72,11 @@
             path.join(grunt.projectPath, '../account/src/main/webapp/WEB-INF/views/**/*.ftl'),
             path.join(grunt.projectPath, '../search/src/main/resources/ftl/**/*.ftl'),
         ],
-        //本地mock路由数据装载js或者json
         route: path.join(__dirname, '../../../routes/pc.route.js')
       }
-      //创建mock开发服务对象
+     
       var dev = new DynamicViewProjectDev(options);
-      //包裹warp数据
-      dev.on('dataWrap', (context) =>context.data = Mock.mock(context.data));
-      //启动
+      dev.on('dataWrap', (context) =>context.data.user={name:'ss',age:xxxx});
       dev.startup();
       
 ### 六、参数解释

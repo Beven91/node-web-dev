@@ -39,7 +39,57 @@
 ### 二、安装
 
     npm install node-web-dev --save-dev
+    
+### 三、环境要求
 
+    1. nodejs v6.2+  (目前使用es6预发所写，暂时不打算转换成es5)
+    
+    2. jdk  (在使用freemakre 需要依赖于jdk) 安装代价不大
+    
+    
+### 四、都支持哪些动态视图编译?
+
+    目前仅支持freemarker的视图编译，后续部分会实现其他较为纯粹的动态视图
+     
+### 五、用例
+
+     let options = {
+        //静态资源服务站点配置
+        server: {
+            "server": "../webapp/", //服务器根目录
+            "files": ['../webapp/**/*.css', '../webapp/**/*.js'], //要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
+            "index": "/", //网站默认启动路径 默认为 /
+        },
+        //代理配置
+        proxy: {
+            target: 'http://10.21.11.161:8010' //mock api的url地址 其他参见 http-proxy
+        },
+        //本地mock配置
+        local: {
+            /*
+              本地mock模式，
+                   online: 所有接口使用在线数据，
+                     auto: 优先从代理获取数据,当获取失败，使用本地路由定义的数据,
+                    local: 所有接口都使用本地,
+              existsLocal: 当在本地置有路由则使用本地的，否则使用在线的	
+            */
+            local: 'auto', 
+            localDir: path.join(__dirname, '../../../mock/') //如果local:true时，本地mock数据的存放目录
+        },
+        //后端项目要监听的项目目录 指定目录下指定文件变更时，会通知客户端浏览器自动刷新
+        projects: [
+            path.join(grunt.projectPath, '../account/src/main/webapp/WEB-INF/views/**/*.ftl'),
+            path.join(grunt.projectPath, '../search/src/main/resources/ftl/**/*.ftl'),
+        ],
+        //本地mock路由数据装载js或者json
+        route: path.join(__dirname, '../../../routes/pc.route.js')
+     }
+    //创建mock开发服务对象
+    let dev = new DynamicViewProjectDev(options);
+    //包裹warp数据
+    dev.on('dataWrap', (context) =>context.data = Mock.mock(context.data));
+    //启动
+    dev.startup();
 
 ### 三、开源许可
 基于 [MIT License](http://zh.wikipedia.org/wiki/MIT_License) 开源，使用代码只需说明来源，或者引用 [license.txt](https://github.com/sofish/typo.css/blob/master/license.txt) 即可。

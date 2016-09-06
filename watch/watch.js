@@ -5,9 +5,9 @@
  * 描述：当在编辑指定视图文件时，本地会根据改动的视图名称来自动刷新网页
  */
 
-const {Gaze} = require('gaze');
-
-const Routes = require('../middleware/routes.js');
+const {
+    Gaze
+} = require('gaze');
 
 class DevWatch {
 
@@ -29,7 +29,7 @@ class DevWatch {
      */
     onChanged(filepath) {
         let route = this.dev.routes.findByView(filepath);
-        if(route){
+        if (route) {
             this.dev.serverApp.redirect(route.url);
         }
     }

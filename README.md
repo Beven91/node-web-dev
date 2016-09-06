@@ -52,8 +52,10 @@
     目前仅支持freemarker的视图编译，后续部分会实现其他较为纯粹的动态视图
      
 ### 五、用例
-
-     let options = {
+	
+     var DynamicViewProjectDev = require('node-web-dev').DynamicViewProjectDev;	
+	
+     var options = {
         //静态资源服务站点配置
         server: {
             //服务器根目录
@@ -89,7 +91,7 @@
         route: path.join(__dirname, '../../../routes/pc.route.js')
       }
       //创建mock开发服务对象
-      let dev = new DynamicViewProjectDev(options);
+      var dev = new DynamicViewProjectDev(options);
       //包裹warp数据
       dev.on('dataWrap', (context) =>context.data = Mock.mock(context.data));
       //启动
@@ -97,6 +99,7 @@
       
 ### 六、参数解释
 	
+        	
 	server: 使用的是browser-sync服务，
             --- "server": 前段静态资源网站服务器根目录 例如 "../webapp/",
             --- "files":  要监听的文件或者目录，文件改变时，会自动同步通常用于css或者js
@@ -126,9 +129,87 @@
 
 ### 七、事件
 
+           onReady: 当mock服务启动后触发
         
+        
+        onResponse: 当mock请求代理服务器数据返回后触发
+        
+                    (content, req, res)=>{  
+                    	......
+                    }
+                    content: 返回的内容string
+                        req: 当前http请求对象 ClientRequest
+                        res: 当前http请求对应的返回对象 IncomingMessage
+        
+        
+             match: 用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
+        
+                    (context, url, req, res)=>{
+                    	//通过复写context.route来重新定义当前匹配到的路由
+                    	context.route  ={
+                    	    view:'sss.ftl',
+                    	    dir:'xxx',
+                    	    ....
+                    	    
+                    	}
+                    }
+                    content: 返回的内容string
+                        url: 当前请求url
+                        req: 当前http请求对象 ClientRequest
+                        res: 当前http请求对应的返回对象 IncomingMessage
+        
+        
+             error: 当mock请求代理服务器出现异常时触发
+        
+                    (error, req, res)=>{
+                    
+                    }
+                      error: 错误消息
+                        req: 当前http请求对象 ClientRequest
+                        res: 当前http请求对应的返回对象 IncomingMessage
+        
+        
+          dataWrap: 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
+                   
+        	    (context)=>{
+        	    	context.data.other  ={.....};
+        	    }
 
 ### 八、定制编译器
+
+         var Compiler = require('node-web-dev').Compiler;
+         
+         es6:
+         
+         class JspCompiler extends Compiler{
+         	
+         	constructor(){
+         	    super('.jsp');
+         	}
+         	
+         	compile(file,data,callback){
+         		......
+         		callback(error,results);
+         	}
+         }
+         
+         Compiler.register(new JspCompiler());
+         
+         es5:
+         
+         function JspCompiler(){
+            
+            Compiler.call(this,'.jsp');
+            
+         }
+         
+         JspCompiler.prototype.compile = function(viewfile,data,callback){
+         	
+         	......
+         	callback(error,results);
+         }
+         
+         Compiler.register(new JspCompiler());
 
 ### 九、开源许可
 基于 [MIT License](http://zh.wikipedia.org/wiki/MIT_License) 开源，使用代码只需说明来源，或者引用 [license.txt](https://github.com/sofish/typo.css/blob/master/license.txt) 即可。

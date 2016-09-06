@@ -17,7 +17,7 @@ const CompilerFactory = require('../compiler/compiler.js');
 
 //中间件默认配置数据
 const defaultOptions = {
-    local: true,//如果在使用在线接口获取数据出现异常，或者 当在线接口返回无效数据，时，使用本地Mock数据 默认 true
+    local: true, //如果在使用在线接口获取数据出现异常，或者 当在线接口返回无效数据，时，使用本地Mock数据 默认 true
     localDir: '' //如果local:true时，本地mock数据的存放目录
 }
 
@@ -29,10 +29,13 @@ class BrowserSyncMiddleware {
      */
     constructor(dev) {
         this.dev = dev;
-        let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
-        this.options = Object.assign({}, defaultOptions, dev.options.local);
-        proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
-        proxy.on("error", (...args) => this.onProxyResponseError(...args));
+        this.proxyable = (dev.options.proxy || {}).enable;
+        if (this.proxyable) {
+            let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
+            this.options = Object.assign({}, defaultOptions, dev.options.local);
+            proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
+            proxy.on("error", (...args) => this.onProxyResponseError(...args));
+        }
     }
 
     /**
@@ -85,9 +88,10 @@ class BrowserSyncMiddleware {
         let next = req.originMiddlewareChain;
         let url = req.originalUrl;
         let route = this.dev.routes.match(url);
+        let context = {route:route};
         this.dev.emit('onResponse', content, req, res);
-        let oRoute = this.dev.emit('match', route, url, req, res);
-        route = oRoute === false ? route : oRoute;
+        this.dev.emit('match', context, url, req, res);
+        route = context.route;
         if (route) {
             this.doViewResponse(content, req, res, route);
         } else {
@@ -121,13 +125,13 @@ class BrowserSyncMiddleware {
             let options = {
                 views: route.viewsDir
             }
+            let context = {data: data };
             let compiler = CompilerFactory.getCompiler(view, options);
             if (null == compiler) {
                 throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
             }
-            let newData = this.dev.emit('dataWrap', data);
-            data = newData === false ? data : newData;
-            compiler.compile(view, data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res));
+            this.dev.emit('dataWrap', context);
+            compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res));
         } catch (ex) {
             this.doErrorResponse(ex.stack, res);
         }
@@ -147,7 +151,7 @@ class BrowserSyncMiddleware {
      * 执行error返回
      */
     doErrorResponse(data, res) {
-        let content  = data || "返回空内容？";
+        let content = data || "返回空内容？";
         let htmls = [
             '<html>',
             '   <head>',
@@ -156,7 +160,7 @@ class BrowserSyncMiddleware {
             '   </head>',
             '   <body>',
             '       <code style="white-space:pre;">',
-            content.replace(/\n/g,'</br>'),
+            content.replace(/\n/g, '</br>'),
             '       </code>',
             '   </body>',
             '</html>'
@@ -169,7 +173,11 @@ class BrowserSyncMiddleware {
      * 发起一个代理请求
      */
     doProxyHttpRequest(req, res) {
-        this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+        if (this.proxyable) {
+            this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+        } else {
+            this.onProxyRespnoseEnd(null, req, res);
+        }
     }
 
     /**
@@ -193,14 +201,17 @@ class BrowserSyncMiddleware {
      * 获取route本地对应的mock数据
      */
     getLocalMock(route) {
-        let {dir, view} = route;
+        let {
+            dir,
+            view
+        } = route;
         let ext = path.extname(view);
         let file = path.join(this.options.localDir, dir, view.replace(ext, ".js").replace(/\/|\\\\/g, "-"));
         return require(file);
     }
 
     /**
-         * 判断当前请求是否需要进入托管处理
+     * 判断当前请求是否需要进入托管处理
      */
     isCustomRequest(req) {
         return true;

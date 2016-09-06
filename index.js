@@ -19,6 +19,7 @@
         "index": "/",//网站默认启动路径 默认为 /
     },
     proxy: {
+        enable:true,//是否启用代理
         target: '' //mock api的url地址 其他参见 http-proxy
     },
     local: {
@@ -43,11 +44,11 @@ const EventEmitter = require('eventemitter3');
 
 //默认配置
 const defaultsOptions = {
-    server: {},//服务器配置
-    proxy: {},//代理mock 配置
-    local: {},//本地mock配置
+    server: {}, //服务器配置
+    proxy: {}, //代理mock 配置
+    local: {}, //本地mock配置
     projects: [], //哪些包含视图的后端项目的绝对路径
-    route: ''//路由配置文件，可以是.json或者.js 并且expors必须为对象
+    route: '' //路由配置文件，可以是.json或者.js 并且expors必须为对象
 }
 
 class DynamicViewProjectDev {

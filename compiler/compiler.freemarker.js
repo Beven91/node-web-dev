@@ -12,7 +12,6 @@ class FtlCompiler extends Compiler {
 
     constructor() {
         super('.ftl');
-        this._compiler = new FreemarkerCompiler({});
     }
 
     /**
@@ -22,8 +21,7 @@ class FtlCompiler extends Compiler {
      * @param callback 编译完毕回调函数 callback(error,html);
      */
     compile(viewFile, data, callback) {
-        let compiler = this._compiler;
-        Object.assign(compiler.settings, this.compileOptions);
+        let compiler = new FreemarkerCompiler(this.compileOptions);
         compiler.compile(viewFile, data, callback);
     }
 }

@@ -6,7 +6,10 @@
  */
 
 //异常列表
-const {argsNull, argsType} = require('../utils/error.js');
+const {
+    argsNull,
+    argsType
+} = require('../utils/error.js');
 
 //路径
 const path = require('path');
@@ -21,8 +24,12 @@ class Compiler {
      * @param file 视图路径
      * @param options 设置该编译器对应的options
      */
-    static getCompiler(file) {
-        return [...compilers].find((compiler) => compiler.compilable(file));
+    static getCompiler(file, options) {
+        let compiler = [...compilers].find((compiler) => compiler.compilable(file));
+        if(compiler){
+            compiler.setCompileOption(options);
+        }
+        return compiler;
     }
 
     /**
@@ -39,7 +46,12 @@ class Compiler {
      * @param ext 编译器能能编译的文件类型，例如: .ftl,.jsp  理论上只需要写一种类型 多种类型使用','号隔开
      */
     constructor(ext = argsNull('ext')) {
-        Object.defineProperty(this, 'ext', { value: (ext || '').toLowerCase().split(','), writable: false, enumerable: true, configurable: false });
+        Object.defineProperty(this, 'ext', {
+            value: (ext || '').toLowerCase().split(','),
+            writable: false,
+            enumerable: true,
+            configurable: false
+        });
     }
 
     /**
@@ -48,7 +60,7 @@ class Compiler {
      * @param data 视图上下文数据
      * @param callback 编译完毕回调函数 callback(error,html);
      */
-    compile(viewFile, data,callback) {
+    compile(viewFile, data, callback) {
         throw new Error("请实现compiler.compile函数");
     }
 
@@ -56,7 +68,7 @@ class Compiler {
      * 设置编译配置
      * @param options
      */
-    setCompileOption(options){
+    setCompileOption(options) {
         this.compileOptions = options;
     }
 

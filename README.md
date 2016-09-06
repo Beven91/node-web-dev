@@ -183,25 +183,7 @@ ES6:
          //注册到编译容器
          Compiler.register(new JspCompiler());
          
-         
-ES5:
-
-        var Compiler = require('node-web-dev').Compiler;
-         
-	 function JspCompiler(){
-            
-            Compiler.call(this,'.jsp');
-            
-         }
-         
-         JspCompiler.prototype.compile = function(viewfile,data,callback){
-         	
-         	......
-         	callback(error,results);
-         }
-         
-          //注册到编译容器
-         Compiler.register(new JspCompiler());
+     
 
 ### 九、开源许可
 基于 [MIT License](http://zh.wikipedia.org/wiki/MIT_License) 开源，使用代码只需说明来源，或者引用 [license.txt](https://github.com/sofish/typo.css/blob/master/license.txt) 即可。

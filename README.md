@@ -82,8 +82,8 @@
 ### 六、参数解释
 	
         	
-	server: 使用的是browser-sync服务，
-            --- "server": 前段静态资源网站服务器根目录 例如 "../webapp/",
+	* **server**: 使用的是browser-sync服务，
+            --- * **"server"**: 前段静态资源网站服务器根目录 例如 "../webapp/",
             --- "files":  要监听的文件或者目录，文件改变时，会自动同步通常用于css或者js
                           例如:['../webapp/**/*.css', '../webapp/**/*.js'], 
             --- "index": 网站默认启动路径 例如: /

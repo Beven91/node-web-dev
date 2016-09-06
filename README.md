@@ -188,7 +188,7 @@ ES5:
 
         var Compiler = require('node-web-dev').Compiler;
          
-	function JspCompiler(){
+	 function JspCompiler(){
             
             Compiler.call(this,'.jsp');
             

@@ -115,22 +115,23 @@
 
 ### 七、事件
 
-           onReady: 当mock服务启动后触发
-        
-        
-        onResponse: 当mock请求代理服务器数据返回后触发
-        
-                    (content, req, res)=>{  
+* **onReady** 当mock服务启动后触发
+
+
+* **onResponse** 当mock请求代理服务器数据返回后触发
+ 
+ 		(content, req, res)=>{  
                     	......
-                    }
-                    content: 返回的内容string
-                        req: 当前http请求对象 ClientRequest
-                        res: 当前http请求对应的返回对象 IncomingMessage
+                }
+                content: 返回的内容string
+                    req: 当前http请求对象 ClientRequest
+                    res: 当前http请求对应的返回对象 IncomingMessage
+
         
         
-             match: 用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
+* **match**  用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
         
-                    (context, url, req, res)=>{
+                (context, url, req, res)=>{
                     	//通过复写context.route来重新定义当前匹配到的路由
                     	context.route  ={
                     	    view:'sss.ftl',
@@ -138,14 +139,14 @@
                     	    ....
                     	    
                     	}
-                    }
+                }
                     content: 返回的内容string
                         url: 当前请求url
                         req: 当前http请求对象 ClientRequest
                         res: 当前http请求对应的返回对象 IncomingMessage
         
         
-             error: 当mock请求代理服务器出现异常时触发
+* **error**  当mock请求代理服务器出现异常时触发
         
                     (error, req, res)=>{
                     
@@ -155,7 +156,7 @@
                         res: 当前http请求对应的返回对象 IncomingMessage
         
         
-          dataWrap: 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
+* **dataWrap** 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
                    
         	    (context)=>{
         	    	context.data.other  ={.....};
@@ -185,10 +186,9 @@ ES6:
          
 ES5:
 
-
-         var Compiler = require('node-web-dev').Compiler;
+        var Compiler = require('node-web-dev').Compiler;
          
-	 function JspCompiler(){
+	function JspCompiler(){
             
             Compiler.call(this,'.jsp');
             

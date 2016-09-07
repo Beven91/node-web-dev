@@ -18,24 +18,37 @@ class RouteContainer {
 
     /**
      * 根据url查找对应的route
+     * @param pathname 请求url的pathname 不包含？号参数
      */
-    match(url) {
-        let k = Object.keys(this.routes).find((k) => (new RegExp(`^${k}$`).test(url)));
-        return this.routes[k];
+    match(pathname) {
+        return this.routes.find((r) => (new RegExp(`^${r.url}$`).test(pathname)));
+    }
+
+    /**
+     * 根据request对象匹配对应的路由 注意此函数会匹配method是否一致
+     * @param req {ClientRequest}
+     */
+    matchByRequest(req) {
+        if (req) {
+            let pathname = req.originalUrl.split('?')[0];
+            let route = this.match(pathname);
+            if (route) {
+                let method1 = (route.method || "").toLowerCase();
+                let method2 = req.method.toLowerCase();
+                route = (method1 == method2) ? route : null;
+            }
+            return route;
+        } else {
+            return null;
+        }
     }
 
     /**
      * 根据视图查找对应的route
+     * @param view 视图路径 例如： site/home.ftl
      */
     findByView(view) {
-        let routes = this.routes;
-        let keys = Object.keys(routes);
-        let k = keys.find((k) => view.indexOf(routes[k].view.replace(/\//g, '\\')) > -1);
-        let route = routes[k];
-        if (route) {
-            route.url = k;
-        }
-        return route;
+        return this.routes.find((r) => view.indexOf(r.view.replace(/\//g, '\\')) > -1);
     }
 }
 

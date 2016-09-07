@@ -80,7 +80,7 @@ class BrowserSyncMiddleware {
     onProxyRespnoseEnd(content, req, res) {
         let next = req.originMiddlewareChain;
         let pathname = req.originalUrl.split('?')[0];
-        let route = this.dev.routes.match(pathname);
+        let route = this.dev.routes.matchByRequest(req);
         let context = {
             route: route,
             routeContainer: this.dev.routes
@@ -221,8 +221,7 @@ class BrowserSyncMiddleware {
      * 判断当前请求是否需要进入托管处理
      */
     isRemotable(req) {
-        let pathname = req.originalUrl.split('?')[0];
-        let route = this.dev.routes.match(pathname);
+        let route = this.dev.routes.matchByRequest(req);
         let mode = this.options.mode;
         if (mode == "local" || mode == 'existsLocal' && route) {
             return false;

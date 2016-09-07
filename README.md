@@ -66,6 +66,7 @@
         },
         local: {
             local: 'auto', 
+            record:true,
             localDir: path.join(__dirname, '../../../mock/') 
         },
         projects: [
@@ -93,6 +94,7 @@
 * **local**  
   * **local.mode**     本地mock模式 'online'-->  所有接口使用在线数据，'auto'-->优先从代理获取数据,当获取失败，使用本地路由定义的数据,'local'--> 所有接口都使用本地, 'existsLocal'--> 当在本地置有路由则使用本地的，否则使用在线的
   * **local.localDir** 本地mock数据的存放目录
+  * **local.record**   是否自动同步mock数据到本地
 
 * **projects**  要监听的后端项目，通常用于指定在后端项目中视图改变时，自动刷新浏览器例如:['./websites/src/main/web-inf/views/**/*.ftl']
 
@@ -115,11 +117,19 @@
 	        "viewsDir": "...."
 	    },
 	    {
+	    	"url":"/news/list",
+	    	"mock":"./mock/new-list.js",
+	    	"method":"POST",
+	    	"dir":"websites"
+	    },
+	    {
 	    	"url":"/do",
 	    	"method":"POST",
 	        "view": "redirect:/item/999"
-	    }
-	]             
+	    }]          
+	
+	
+	
                      
         
         

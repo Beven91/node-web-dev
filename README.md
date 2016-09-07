@@ -99,21 +99,27 @@
 * **route**     本地mock使用的路由装载js或者json
                 例如: './routes/route.js'
 
-        module.exports ={
-	    "/": {
+        module.exports =[
+	    {
+	        "url":"/",
 	        "view": "site/home.ftl",
 	        "dir": "websites",
+	        "method":"GET",
 	        "viewsDir": "./websites/src/main/web-inf/views"
 	    },
-	    "/item/\\d+": {
+	    {
+	    	"url":"/item/\\d+",
 	        "view": "item/item-info.ftl",
+	        "method":"GET",
 	        "dir": "websites",
 	        "viewsDir": "...."
 	    },
-	    "/do": {
+	    {
+	    	"url":"/do",
+	    	"method":"POST",
 	        "view": "redirect:/item/999"
 	    }
-	}             
+	]             
                      
         
         

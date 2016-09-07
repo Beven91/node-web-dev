@@ -98,26 +98,22 @@
 
 * **route**     本地mock使用的路由装载js或者json
                 例如: './routes/route.js'
-                    
-                     route.js:
-                     
-                     module.exports = {
-                     	"/":{
-                     		view:'site/home.ftl',
-                     		dir:'websites',
-                     		viewsDir:'./websites/src/main/web-inf/views' //这个viewsDir可以使用js代码批量生成
-                     	},
-                       "/item/\\d+":{
-			    view:'item/item-info.ftl',
-                            dir:'websites',
-                            viewsDir:'....'
-                       },
-                      "/do":{
-			    view:'redirect:/item/999'
-                       }
-                     }
-                     
-  
+
+        module.exports ={
+	    "/": {
+	        "view": "site/home.ftl",
+	        "dir": "websites",
+	        "viewsDir": "./websites/src/main/web-inf/views"
+	    },
+	    "/item/\\d+": {
+	        "view": "item/item-info.ftl",
+	        "dir": "websites",
+	        "viewsDir": "...."
+	    },
+	    "/do": {
+	        "view": "redirect:/item/999"
+	    }
+	}             
                      
         
         

@@ -146,7 +146,6 @@
                     	    ....
                     	    
                     	}
-                        //或者需要
                 }
                     
         
@@ -166,7 +165,7 @@
 * **dataWrap** 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
 
 
-                    context: {data:...}
+                context: {data:...}
         	    (context)=>{
         	    	context.data.other  ={.....};
         	    }

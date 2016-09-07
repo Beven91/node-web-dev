@@ -194,8 +194,8 @@ class BrowserSyncMiddleware {
         let data = null;
         try {
             data = JSON.parse(content)
-        } finally {
-
+        } catch(ex) {
+            
         }
         if (data == null && this.options.mode != 'online') {
             data = this.getLocalMock(route);

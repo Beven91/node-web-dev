@@ -1,18 +1,18 @@
 const path = require('path');
-const routes ={
-    "/":{
-        "view":"site/home.ftl",
-        "dir":"websites"
-    }
-}
+const routes = [{
+    "url": "/",
+    "method": "GET",
+    "view": "site/home.ftl",
+    "dir": "websites"
+}]
 
-function routeRender(routes){
-    let keys  =Object.keys(routes);
-    let route  =null;
-    for(let key of keys){
-        route  =routes[key];
+function routeRender(routes) {
+    let keys = Object.keys(routes);
+    let route = null;
+    for (let key of keys) {
+        route = routes[key];
         //初始化视图根目录
-        route.viewsDir =path.join(__dirname,'projects','websites','views');
+        route.viewsDir = path.join(__dirname, 'projects', 'websites', 'views');
     }
     return routes;
 }

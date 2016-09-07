@@ -91,10 +91,11 @@
     * **server.proxy**  mock接口服务器地址，详细设置参照: [http-proxy](https://github.com/nodejitsu/node-http-proxy "http-proxy")
 
 * **local**  
-* **local.mode**     本地mock模式 'online'-->    所有接口使用在线数据，'auto'-->优先从代理获取数据,当获取失败，使用本地路由定义的数据,'local'--> 所有接口都使用本地, 'existsLocal'--> 当在本地置有路由则使用本地的，否则使用在线的
-* **local.localDir** 本地mock数据的存放目录
+  * **local.mode**     本地mock模式 'online'-->  所有接口使用在线数据，'auto'-->优先从代理获取数据,当获取失败，使用本地路由定义的数据,'local'--> 所有接口都使用本地, 'existsLocal'--> 当在本地置有路由则使用本地的，否则使用在线的
+  * **local.localDir** 本地mock数据的存放目录
 
 * **projects**  要监听的后端项目，通常用于指定在后端项目中视图改变时，自动刷新浏览器例如:['./websites/src/main/web-inf/views/**/*.ftl']
+
 * **route**     本地mock使用的路由装载js或者json
                 例如: './routes/route.js'
                     
@@ -119,8 +120,9 @@
 
 
 * **onResponse** 当mock请求代理服务器数据返回后触发
- 
-		content: 返回的内容string
+
+
+ 		content: 返回的内容string
                     req: 当前http请求对象 ClientRequest
                     res: 当前http请求对应的返回对象 IncomingMessage
  		(content, req, res)=>{  
@@ -130,6 +132,8 @@
         
         
 * **match**  用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
+
+
         	context: { route:默认匹配的路由,routeContainer: 路由容器}
                         url: 当前请求url
                         req: 当前http请求对象 ClientRequest
@@ -148,6 +152,8 @@
         
         
 * **error**  当mock请求代理服务器出现异常时触发
+
+
         	    error: 错误消息
                       req: 当前http请求对象 ClientRequest
                       res: 当前http请求对应的返回对象 IncomingMessage
@@ -158,6 +164,8 @@
         
         
 * **dataWrap** 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
+
+
                     context: {data:...}
         	    (context)=>{
         	    	context.data.other  ={.....};

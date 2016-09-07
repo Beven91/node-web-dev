@@ -79,14 +79,14 @@ class BrowserSyncMiddleware {
      */
     onProxyRespnoseEnd(content, req, res) {
         let next = req.originMiddlewareChain;
-        let url = req.originalUrl;
-        let route = this.dev.routes.match(url);
+        let pathname = req.originalUrl.split('?')[0];
+        let route = this.dev.routes.match(pathname);
         let context = {
             route: route,
             routeContainer: this.dev.routes
         };
         this.dev.emit('onResponse', content, req, res);
-        this.dev.emit('match', context, url, req, res);
+        this.dev.emit('match', context, pathname, req, res);
         route = context.route;
         let mode = this.getRouteMode(route)
         switch (mode) {
@@ -181,6 +181,7 @@ class BrowserSyncMiddleware {
      */
     doProxyHttpRequest(req, res) {
         if (this.isRemotable(req)) {
+            this.dev.emit('onProxy', req, res);
             this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
         } else {
             this.onProxyRespnoseEnd(null, req, res);
@@ -194,8 +195,8 @@ class BrowserSyncMiddleware {
         let data = null;
         try {
             data = JSON.parse(content)
-        } catch(ex) {
-            
+        } catch (ex) {
+
         }
         if (data == null && this.options.mode != 'online') {
             data = this.getLocalMock(route);
@@ -220,8 +221,8 @@ class BrowserSyncMiddleware {
      * 判断当前请求是否需要进入托管处理
      */
     isRemotable(req) {
-        let url = req.originalUrl;
-        let route = this.dev.routes.match(url);
+        let pathname = req.originalUrl.split('?')[0];
+        let route = this.dev.routes.match(pathname);
         let mode = this.options.mode;
         if (mode == "local" || mode == 'existsLocal' && route) {
             return false;

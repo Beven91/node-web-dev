@@ -44,11 +44,15 @@ class BrowserSyncMiddleware {
      * @param next 后续调用链 
      */
     onReceieveRequest(req, res, next) {
-        let content = "";
-        //设置next函数引用
-        req.originMiddlewareChain = next;
-        //请求mock数据
-        this.doProxyHttpRequest(req, res);
+        if(!this.isLocalResource(req)){
+            let content = "";
+            //设置next函数引用
+            req.originMiddlewareChain = next;
+            //请求mock数据
+            this.doProxyHttpRequest(req, res);
+        }else{
+            next();
+        }
     }
 
     /**
@@ -299,6 +303,17 @@ class BrowserSyncMiddleware {
         } else {
             return "view";
         }
+    }
+
+    /**
+     * 判断是否为本地静态资源
+     * @param req {ClientRequest}对象
+     */
+    isLocalResource(req){
+        let serverRoot = this.dev.options.server.server;
+        let pathname  =req.url.split('?')[0];
+        let file = path.join(serverRoot,pathname);
+        return fs.existsSync(file) && fs.statSync(file).isFile();
     }
 }
 

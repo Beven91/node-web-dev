@@ -64,6 +64,8 @@ class DynamicViewProjectDev {
         this.serverApp = new ServerApp(myOptions.server);
         //创建文件监视器
         this.watcher = new DevWatch(this);
+        //record的list
+        this.recordList = [];
         //注册ftl compiler
         Compiler.register(new FtlCompiler());
 

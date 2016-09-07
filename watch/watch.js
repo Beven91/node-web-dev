@@ -20,6 +20,12 @@ class DevWatch {
      */
     start(projects) {
         this.tryClose();
+        projects = projects || [];
+        let localMockDir = this.dev.options.local.localDir;
+        if (localMockDir != null && localMockDir != "") {
+            projects.push(localMockDir + "/**/*.js");
+            projects.push(localMockDir + "/**/*.json");
+        }
         let gaze = this.gaze = new Gaze(projects);
         gaze.on('changed', (...args) => this.onChanged(...args));
     }
@@ -28,9 +34,18 @@ class DevWatch {
      * 当指定文件发生改变时
      */
     onChanged(filepath) {
-        let route = this.dev.routes.findByView(filepath);
-        if (route) {
-            this.dev.serverApp.redirect(route.url);
+        if (this.dev.recordList.indexOf(filepath) <0) {
+            let routes = this.dev.routes;
+            let route = routes.findByChangeFile(filepath);
+            console.log(`文件:${filepath} 已改变`);
+            if (route && route.view) {
+                console.log(`找到对应路由${route.url},开始重定向到对应路由`);
+                this.dev.serverApp.redirect(route.url);
+            } else {
+                this.dev.serverApp.locationReload();
+            }
+        } else {
+            this.dev.recordList = this.dev.recordList.filter((x) => x != filepath);
         }
     }
 

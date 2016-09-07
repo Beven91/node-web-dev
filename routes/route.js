@@ -6,10 +6,12 @@
  */
 
 const path = require('path');
+const fs = require('fs');
 
 class RouteContainer {
 
     constructor(file) {
+        this.file = file;
         this.routes = require(file);
         if (this.routes == null) {
             throw new Error(`没有的取到路由${file}`);
@@ -44,11 +46,23 @@ class RouteContainer {
     }
 
     /**
-     * 根据视图查找对应的route
-     * @param view 视图路径 例如： site/home.ftl
+     * 根据本地mock查找对应的route
      */
-    findByView(view) {
-        return this.routes.find((r) => view.indexOf(r.view.replace(/\//g, '\\')) > -1);
+    findByChangeFile(file) {
+        file = file || "";
+        let ext = (v) => path.extname(v);
+        let normalize = (v) => (v || "").replace(/\//g, '\\');
+        let normalize2 = (v) => (v || "").replace(ext(v), ".js").replace(/\/|\\\\/g, "-");
+        let contains = (v) => file.indexOf(normalize(v)) > -1;
+        let contains2 = (v) => file.indexOf(normalize2(v)) > -1;
+        return this.routes.find((r) => contains(r.mock) || contains2(r.view));
+    }
+
+    /**
+     * 保存路由
+     */
+    save() {
+        fs.writeFileSync(this.file, JSON.stringify(this.routes, null, 4));
     }
 }
 

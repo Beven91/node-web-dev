@@ -13,9 +13,9 @@ const middleware = require('./middleware/browsersync.middleware.js').middleware;
 
 //默认配置参数
 const defaultsOptions = {
-    "server": "",//服务器根目录
-    "files": ["**/*.js", "**/*.css"],//要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
-    "index": "/",//网站默认启动路径 默认为 /
+    "server": "", //服务器根目录
+    "files": ["**/*.js", "**/*.css"], //要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
+    "index": "/", //网站默认启动路径 默认为 /
 }
 
 
@@ -40,7 +40,7 @@ class ServerApp {
             files: options.files,
             index: options.index,
             middleware: (req, res, next) => middleware(req, res, next, dev)
-        },()=>dev.emit('onReady'));
+        }, () => dev.emit('onReady'));
     }
 
     /**
@@ -48,8 +48,15 @@ class ServerApp {
      */
     executeScript(content) {
         let instance = this.server;
-        let scripts = `(function(){ (new top.Function('${content}')).apply(top); }());`;
-        instance.ui.addElement(instance.ui.clients, { type: 'dom', tagName: 'iframe', attrs: { "src": `javascript:${content}` } });
+        let scripts = `(function(){ (new top.Function('${content}')).apply(top); }());this.frameElement.remove()`;
+        instance.ui.addElement(instance.ui.clients, {
+            type: 'dom',
+            tagName: 'iframe',
+            attrs: {
+                "style": "display:none",
+                "src": `javascript:${scripts}`
+            }
+        });
     }
 
     /**

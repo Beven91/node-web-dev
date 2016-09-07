@@ -5,7 +5,8 @@
  * 描述：主要用于处理本地websites,paycenter等项目请求，从而使不用启动java项目便能真实模拟项目运行
  */
 
-
+//fs
+const fs = require('fs');
 //path
 const path = require('path');
 //http
@@ -18,6 +19,7 @@ const CompilerFactory = require('../compiler/compiler.js');
 //中间件默认配置数据
 const defaultOptions = {
     mode: 'auto', //本地mock模式，online:所有接口使用在线数据，auto:当在线获取失败，使用本地,local:所有接口都使用本地,existsLocal:当在本地配置有路由则使用本地的，否则使用在线的
+    record: false, //是否记录在线数据到本地
     localDir: '' //如果local:true时，本地mock数据的存放目录
 }
 
@@ -96,6 +98,9 @@ class BrowserSyncMiddleware {
             case 'redirect':
                 this.dev.serverApp.redirect(route.view.split('redirect:')[1]);
                 break;
+            case "mockjs":
+                this.doMockResponse(content, req, res, route);
+                break;
             default:
                 this.doResponse(content, res);
                 break;
@@ -112,6 +117,32 @@ class BrowserSyncMiddleware {
         } else {
             this.doErrorResponse(error.stack, res);
         }
+    }
+
+
+    /**
+     * 返回mode为mock时返回数据
+     * @param content 在线接口返回正文数据
+     * @param req {ClientRequest}对象
+     * @param res {IncomingMessage}对象
+     * @param route 路由对象
+     */
+    doMockResponse(content, req, res, route) {
+        let data = null;
+        let mockjs = path.join(this.options.localDir, route.dir, route.mock);
+        try {
+            data = JSON.parse(content);
+            if (this.options.record && data) {
+                this.saveLocalMock(mockjs, data);
+            }
+        } catch (ex) {
+
+        }
+        if (data == null) {
+            data = this.getLocal(mockjs);
+        }
+
+        this.doResponse(JSON.stringify(data), res, 'application/json');
     }
 
     /**
@@ -138,9 +169,9 @@ class BrowserSyncMiddleware {
                 throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
             }
             this.dev.emit('dataWrap', context);
-            compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res));
+            compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res, 'text/html'));
         } catch (ex) {
-            this.doErrorResponse(ex.stack, res);
+            this.doErrorResponse(ex.stack, res, 'text/html');
         }
     }
 
@@ -149,8 +180,11 @@ class BrowserSyncMiddleware {
      * @param data 返回给客户端的数据
      * @param res {IncomingMessage}对象
      */
-    doResponse(data, res) {
-        res.write(data || "返回空内容？");
+    doResponse(data, res, contentType = "text/html") {
+        if (!res._header) {
+            res.setHeader("content-type", contentType);
+        }
+        res.write(data || "返回空内容？", "utf8");
         res.end();
     }
 
@@ -172,7 +206,10 @@ class BrowserSyncMiddleware {
             '   </body>',
             '</html>'
         ];
-        res.write(htmls.join(''));
+        if (!res._header) {
+            res.writeHead(500);
+        }
+        res.write(htmls.join(''), "utf8");
         res.end();
     }
 
@@ -193,28 +230,37 @@ class BrowserSyncMiddleware {
      */
     getJson(content, route) {
         let data = null;
-        try {
-            data = JSON.parse(content)
-        } catch (ex) {
-
-        }
-        if (data == null && this.options.mode != 'online') {
-            data = this.getLocalMock(route);
-        }
-        return data;
-    }
-
-    /**
-     * 获取route本地对应的mock数据
-     */
-    getLocalMock(route) {
         let {
             dir,
             view
         } = route;
         let ext = path.extname(view);
         let file = path.join(this.options.localDir, dir, view.replace(ext, ".js").replace(/\/|\\\\/g, "-"));
-        return require(file);
+        try {
+            data = JSON.parse(content);
+            if (this.options.record && data) {
+                this.saveLocalMock(file, data);
+            }
+        } catch (ex) {
+
+        }
+        if (data == null && this.options.mode != 'online') {
+            data = this.getLocal(file);
+        }
+        return data;
+    }
+
+    /**
+     * 保存本地文件
+     */
+    saveLocalMock(file, data) {
+        let ext = path.extname(file);
+        if (ext == ".json") {
+            fs.writeFileSync(file, JSON.stringify(data, null, 4));
+        } else {
+            fs.writeFileSync(file, `module.exports =${JSON.stringify(data, null, 4)}`);
+        }
+        this.dev.recordList.push(file);
     }
 
     /**
@@ -231,15 +277,25 @@ class BrowserSyncMiddleware {
     }
 
     /**
+     * 获取本地mock数据
+     */
+    getLocal(file) {
+        delete require.cache[require.resolve(file)];
+        return require(file);
+    }
+
+    /**
      * 获取路由处理方式
      */
     getRouteMode(route) {
         if (!route) {
             return "none";
         }
-        let view = route.view;
+        let view = route.view || "";
         if (view.indexOf("redirect:") > -1) {
             return "redirect";
+        } else if (route.mock) {
+            return "mockjs";
         } else {
             return "view";
         }

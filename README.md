@@ -122,7 +122,7 @@
 * **onResponse** 当mock请求代理服务器数据返回后触发
 
 
- 			content: 返回的内容string
+ 		content: 返回的内容string
                     req: 当前http请求对象 ClientRequest
                     res: 当前http请求对应的返回对象 IncomingMessage
  		(content, req, res)=>{  

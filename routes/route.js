@@ -10,8 +10,8 @@ const path = require('path');
 class RouteContainer {
 
     constructor(file) {
-        this.routeMap = require(file);
-        if (this.routeMap == null) {
+        this.routes = require(file);
+        if (this.routes == null) {
             throw new Error(`没有的取到路由${file}`);
         }
     }
@@ -20,16 +20,16 @@ class RouteContainer {
      * 根据url查找对应的route
      */
     match(url) {
-        return this.routeMap[(url || "").toLowerCase()];
+        return this.routes[(url || "").toLowerCase()];
     }
 
     /**
      * 根据视图查找对应的route
      */
     findByView(view) {
-        let routes = this.routeMap;
+        let routes = this.routes;
         let keys = Object.keys(routes);
-        let k = keys.find((k) => view.indexOf(routes[k].view.replace(/\//g,'\\')) > -1);
+        let k = keys.find((k) => view.indexOf(routes[k].view.replace(/\//g, '\\')) > -1);
         let route = routes[k];
         if (route) {
             route.url = k;

@@ -82,7 +82,8 @@ class BrowserSyncMiddleware {
         let url = req.originalUrl;
         let route = this.dev.routes.match(url);
         let context = {
-            route: route
+            route: route,
+            routeContainer: this.dev.routes
         };
         this.dev.emit('onResponse', content, req, res);
         this.dev.emit('match', context, url, req, res);

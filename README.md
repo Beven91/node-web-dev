@@ -115,6 +115,12 @@
 	        "viewsDir": "...."
 	    },
 	    {
+	    	"url":"/news/list",
+	    	"mock":"./mock/new-list.js",
+	    	"method":"POST",
+	    	"dir":"websites"
+	    },
+	    {
 	    	"url":"/do",
 	    	"method":"POST",
 	        "view": "redirect:/item/999"

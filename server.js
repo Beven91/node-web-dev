@@ -39,6 +39,7 @@ class ServerApp {
             server: options.server,
             files: options.files,
             index: options.index,
+            port:options.port || 3000,
             middleware: (req, res, next) => middleware(req, res, next, dev)
         }, () => dev.emit('onReady'));
     }

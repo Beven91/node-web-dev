@@ -135,10 +135,10 @@
 
 
         	context: { route:默认匹配的路由,routeContainer: 路由容器}
-                        url: 当前请求url
-                        req: 当前http请求对象 ClientRequest
-                        res: 当前http请求对应的返回对象 IncomingMessage
-                (context, url, req, res)=>{
+               pathname: 当前请求pathname
+                    req: 当前http请求对象 ClientRequest
+                    res: 当前http请求对应的返回对象 IncomingMessage
+                (context, pathname, req, res)=>{
                     	//通过复写context.route来重新定义当前匹配到的路由
                     	context.route  ={
                     	    view:'sss.ftl',

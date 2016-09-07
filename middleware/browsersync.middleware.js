@@ -312,7 +312,7 @@ class BrowserSyncMiddleware {
     isLocalResource(req){
         let serverRoot = this.dev.options.server.server;
         let pathname  =req.url.split('?')[0];
-        let file = path.join(serverRoot,pathname);
+        let file = path.resolve(path.join(serverRoot,pathname));
         return fs.existsSync(file) && fs.statSync(file).isFile();
     }
 }

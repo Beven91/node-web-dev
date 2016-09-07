@@ -20,7 +20,8 @@ class RouteContainer {
      * 根据url查找对应的route
      */
     match(url) {
-        return this.routes[(url || "").toLowerCase()];
+        let k = Object.keys(this.routes).find((k)=>(new RegExp(k).test(url)));
+        return this.routes[k];
     }
 
     /**

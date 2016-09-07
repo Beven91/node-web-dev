@@ -88,10 +88,17 @@ class BrowserSyncMiddleware {
         this.dev.emit('onResponse', content, req, res);
         this.dev.emit('match', context, url, req, res);
         route = context.route;
-        if (route) {
-            this.doViewResponse(content, req, res, route);
-        } else {
-            this.doResponse(content, res);
+        let mode = this.getRouteMode(route)
+        switch (mode) {
+            case 'view':
+                this.doViewResponse(content, req, res, route);
+                break;
+            case 'redirect':
+                this.dev.serverApp.redirect(route.view.split('redirect:')[1]);
+                break;
+            default:
+                this.doResponse(content, res);
+                break;
         }
     }
 
@@ -220,6 +227,21 @@ class BrowserSyncMiddleware {
             return false;
         } else {
             return true;
+        }
+    }
+
+    /**
+     * 获取路由处理方式
+     */
+    getRouteMode(route) {
+        if (!route) {
+            return "none";
+        }
+        let view = route.view;
+        if (view.indexOf("redirect:") > -1) {
+            return "redirect";
+        } else {
+            return "view";
         }
     }
 }

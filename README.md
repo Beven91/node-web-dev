@@ -122,7 +122,7 @@
 * **onResponse** 当mock请求代理服务器数据返回后触发
 
 
- 		content: 返回的内容string
+ 			content: 返回的内容string
                     req: 当前http请求对象 ClientRequest
                     res: 当前http请求对应的返回对象 IncomingMessage
  		(content, req, res)=>{  
@@ -134,7 +134,7 @@
 * **match**  用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
 
 
-        	context: { route:默认匹配的路由,routeContainer: 路由容器}
+        		context: { route:默认匹配的路由,routeContainer: 路由容器}
                pathname: 当前请求pathname
                     req: 当前http请求对象 ClientRequest
                     res: 当前http请求对应的返回对象 IncomingMessage
@@ -153,7 +153,7 @@
 * **error**  当mock请求代理服务器出现异常时触发
 
 
-        	    error: 错误消息
+        	    	error: 错误消息
                       req: 当前http请求对象 ClientRequest
                       res: 当前http请求对应的返回对象 IncomingMessage
                     (error, req, res)=>{

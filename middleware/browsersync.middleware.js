@@ -20,6 +20,7 @@ const CompilerFactory = require('../compiler/compiler.js');
 const defaultOptions = {
     mode: 'auto', //本地mock模式，online:所有接口使用在线数据，auto:当在线获取失败，使用本地,local:所有接口都使用本地,existsLocal:当在本地配置有路由则使用本地的，否则使用在线的
     record: false, //是否记录在线数据到本地
+    overrides: [],//如果使用的是online模式，则可以 使用此参数将代理页面中的指定域名下的资源以本地资源优先 例如:css,js等资源
     localDir: '' //如果local:true时，本地mock数据的存放目录
 }
 
@@ -44,13 +45,13 @@ class BrowserSyncMiddleware {
      * @param next 后续调用链 
      */
     onReceieveRequest(req, res, next) {
-        if(!this.isLocalResource(req)){
+        if (!this.isLocalResource(req)) {
             let content = "";
             //设置next函数引用
             req.originMiddlewareChain = next;
             //请求mock数据
             this.doProxyHttpRequest(req, res);
-        }else{
+        } else {
             next();
         }
     }
@@ -159,24 +160,39 @@ class BrowserSyncMiddleware {
     doViewResponse(content, req, res, route) {
         try {
             let data = this.getJson(content, route);
-            let {
-                view
-            } = route;
-            let options = {
-                views: route.viewsDir
+            if (!data && this.options.mode == 'online') {
+                this.doResponse(this.doStaticResourceToLocal(content), 'text/html');
+            } else {
+                this.doCompileViewResponse(route, data, res);
             }
-            let context = {
-                data: data
-            };
-            let compiler = CompilerFactory.getCompiler(view, options);
-            if (null == compiler) {
-                throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
-            }
-            this.dev.emit('dataWrap', context);
-            compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res, 'text/html'));
+
         } catch (ex) {
             this.doErrorResponse(ex.stack, res, 'text/html');
         }
+    }
+
+    /**
+     * 处理编译本地视图后返回
+     * @param route 路由 对象
+     * @param data 视图数据
+     * @param res {IncomingMessage}对象
+     */
+    doCompileViewResponse(route, data, res) {
+        let {
+            view
+        } = route;
+        let options = {
+            views: route.viewsDir
+        }
+        let context = {
+            data: data
+        };
+        let compiler = CompilerFactory.getCompiler(view, options);
+        if (null == compiler) {
+            throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
+        }
+        this.dev.emit('dataWrap', context);
+        compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res, 'text/html'));
     }
 
     /**
@@ -226,6 +242,20 @@ class BrowserSyncMiddleware {
             this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
         } else {
             this.onProxyRespnoseEnd(null, req, res);
+        }
+    }
+
+    /**
+     * 静态资源重定向到本地处理
+     */
+    doStaticResourceToLocal(content) {
+        content = content || "";
+        let overrides = this.options.overrides || [];
+        if (overrides.length > 0) {
+            let reg = new RegExp(overrides.join('|'), "gi");
+            return content.replace(reg, "/");
+        } else {
+            return content;
         }
     }
 
@@ -309,10 +339,10 @@ class BrowserSyncMiddleware {
      * 判断是否为本地静态资源
      * @param req {ClientRequest}对象
      */
-    isLocalResource(req){
+    isLocalResource(req) {
         let serverRoot = this.dev.options.server.server;
-        let pathname  =req.url.split('?')[0];
-        let file = path.resolve(path.join(serverRoot,pathname));
+        let pathname = req.url.split('?')[0];
+        let file = path.resolve(path.join(serverRoot, pathname));
         return fs.existsSync(file) && fs.statSync(file).isFile();
     }
 }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>独立羊</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="node-web-dev - 开发式分离前后端。">
+    <meta name="keywords" content="node-web-dev front ">
+    <meta name="author" content="Beven">
+    <link rel="stylesheet" type="text/css" href="/scripts/plugins/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/content/css/base.css" />
+    <script type="text/javascript" src="/scripts/plugins/bootstrap/js/bootstrap.min.js"></script>
+</head>
+
+<body class="home">
+    <div class="navbar navbar-fixed-top">
+        <span class="title">前后端分离式</span>
+        <a target="_blank" class="git" href="https://github.com/Beven91/node-web-dev">关注我的GIT</a>
+    </div>
+    <div class=" container content">
+        <form class="form-horizontal server" role="form">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">服务端口</label>
+                <div class="col-sm-3">
+                    <input type="text" value="9100" class="form-control" name="port" placeholder="要启动的网站端口">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">模拟模式</label>
+                <div class="col-sm-3">
+                    <select name="mode" class="form-control">
+                        <option value="auto">智能</option>
+                        <option value="online">在线</option>
+                        <option value="local">本地</option>
+                        <option value="existsLocal">本地优先</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="serverSource" class="col-sm-2 control-label">服务数据源</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="serverSource" placeholder="远程Mock数据地址，例如:http://10.21.11.233">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="serverRoot" class="col-sm-2 control-label">服务根目录</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="serverRoot" placeholder="本地静态资源根目录">
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-default btn-primary file-upload">
+                        选择
+                        <input type="file" class="file" />
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="localResource" class="col-sm-2 control-label">本地数据源</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="localResource" placeholder="本地的Mock数据目录路径">
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-default btn-primary file-upload">
+                        选择
+                        <input type="file" class="file" />
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">后端视图目录</label>
+                <div class="col-sm-8">
+                    <button type="button" class="btn btn-default btn-primary file-upload">
+                        添加
+                        <input type="file" class="file" />
+                    </button>
+                </div>
+            </div>
+            <div class="form-group center">
+                <button type="button" class="btn btn-primary btn-lg ">启动服务</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

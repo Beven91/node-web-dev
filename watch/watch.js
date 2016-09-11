@@ -34,7 +34,7 @@ class DevWatch {
      * 当指定文件发生改变时
      */
     onChanged(filepath) {
-        if (this.dev.recordList.indexOf(filepath) <0) {
+        if (this.dev.recordList.indexOf(filepath) < 0) {
             let routes = this.dev.routes;
             let route = routes.findByChangeFile(filepath);
             console.log(`文件:${filepath} 已改变`);

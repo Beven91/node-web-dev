@@ -33,6 +33,7 @@
 }
 */
 
+const DevServerApp = require('./app/app.js');
 const ServerApp = require('./server.js');
 const Compiler = require('./compiler/compiler.js');
 const FtlCompiler = require('./compiler/compiler.freemarker.js');
@@ -103,6 +104,9 @@ class DynamicViewProjectDev {
 
 //公布引用
 module.exports = {
+    DevServerApp: DevServerApp,
     DynamicViewProjectDev: DynamicViewProjectDev,
     Compiler: Compiler
 }
+
+new DevServerApp().start();

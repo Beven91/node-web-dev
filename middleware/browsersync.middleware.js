@@ -16,11 +16,22 @@ const httpProxy = require('http-proxy');
 //编译器工厂
 const CompilerFactory = require('../compiler/compiler.js');
 
+//客户端监听js
+const clientJs = "node-web-dev-listener.js";
+const clientdir = path.join(__dirname, '../client/');
+
+//mime
+const MIME = {
+    ".js": "application/javascript",
+    ".html": "text/html",
+    ".css": "text/css"
+}
+
 //中间件默认配置数据
 const defaultOptions = {
     mode: 'auto', //本地mock模式，online:所有接口使用在线数据，auto:当在线获取失败，使用本地,local:所有接口都使用本地,existsLocal:当在本地配置有路由则使用本地的，否则使用在线的
     record: false, //是否记录在线数据到本地
-    overrides: [],//如果使用的是online模式，则可以 使用此参数将代理页面中的指定域名下的资源以本地资源优先 例如:css,js等资源
+    overrides: [], //如果使用的是online模式，则可以 使用此参数将代理页面中的指定域名下的资源以本地资源优先 例如:css,js等资源
     localDir: '' //如果local:true时，本地mock数据的存放目录
 }
 
@@ -32,6 +43,7 @@ class BrowserSyncMiddleware {
      */
     constructor(dev) {
         this.dev = dev;
+        this.clientUrlDir = this.md5('node-web-dev-client');
         this.options = Object.assign({}, defaultOptions, dev.options.local);
         let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
         proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
@@ -45,7 +57,10 @@ class BrowserSyncMiddleware {
      * @param next 后续调用链 
      */
     onReceieveRequest(req, res, next) {
-        if (!this.isLocalResource(req)) {
+        let pathname1 = req.url.split('/')[1];
+        if (pathname1 == this.clientUrlDir) {
+            this.doFileResponse(url, res);
+        } else if (!this.isLocalResource(req)) {
             let content = "";
             //设置next函数引用
             req.originMiddlewareChain = next;
@@ -161,7 +176,7 @@ class BrowserSyncMiddleware {
         try {
             let data = this.getJson(content, route);
             if (!data && this.options.mode == 'online') {
-                this.doResponse(this.doStaticResourceToLocal(content), 'text/html');
+                this.doResponse(this.doOverride(content), 'text/html');
             } else {
                 this.doCompileViewResponse(route, data, res);
             }
@@ -192,7 +207,21 @@ class BrowserSyncMiddleware {
             throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
         }
         this.dev.emit('dataWrap', context);
-        compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(html, res, 'text/html'));
+        compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(this.wrap(html), res, 'text/html'));
+    }
+
+    /**
+     * 返回指定文件内容
+     * @param url
+     * @param res
+     * @param contentType
+     */
+    doFileResponse(url, res, next) {
+        let pathname = url.split('?')[0];
+        let file = path.join(clientdir, pathname)
+        let ext = path.extname(file);
+        let mine = MIME[ext];
+        this.doResponse(this.readfile(file), res, mine);
     }
 
     /**
@@ -248,15 +277,21 @@ class BrowserSyncMiddleware {
     /**
      * 静态资源重定向到本地处理
      */
-    doStaticResourceToLocal(content) {
+    doOverride(content) {
         content = content || "";
         let overrides = this.options.overrides || [];
         if (overrides.length > 0) {
             let reg = new RegExp(overrides.join('|'), "gi");
-            return content.replace(reg, "/");
-        } else {
-            return content;
+            content = content.replace(reg, "/");
         }
+        return this.wrap(content);
+    }
+
+    /**
+     * 视图尾部追加toolbar工具栏
+     */
+    wrap(content) {
+        return `${content}<script type="text/javascript" src="/${this.clientUrlDir}/${clientJs}“></script>`;
     }
 
     /**
@@ -344,6 +379,26 @@ class BrowserSyncMiddleware {
         let pathname = req.url.split('?')[0];
         let file = path.resolve(path.join(serverRoot, pathname));
         return fs.existsSync(file) && fs.statSync(file).isFile();
+    }
+
+    /**
+     * 读取指定文件
+     */
+    readfile(file) {
+        return fs.readFileSync(file, {
+            encoding: 'utf8'
+        });
+    }
+
+    /**
+     * MD5加密
+     */
+    md5(str) {
+        let crypto = require('crypto');
+        let md5sum = crypto.createHash('md5');
+        md5sum.update(str);
+        str = md5sum.digest('hex');
+        return str;
     }
 }
 

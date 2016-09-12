@@ -45,9 +45,17 @@ class BrowserSyncMiddleware {
         this.dev = dev;
         this.clientUrlDir = this.md5('node-web-dev-client');
         this.options = Object.assign({}, defaultOptions, dev.options.local);
-        let proxy = this.proxy = httpProxy.createProxyServer(dev.options.proxy);
-        proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
-        proxy.on("error", (...args) => this.onProxyResponseError(...args));
+        let proxyOptions = dev.options.proxy;
+        this.proxy = this.createProxy(proxyOptions);
+        if (proxyOptions.viewTarget) {
+            //是否存在视图代理配置
+            let viewProxyOptions = Object.assign({}, proxyOptions);
+            viewProxyOptions.target = viewProxyOptions.viewTarget;
+            this.viewProxy = this.createProxy(viewProxyOptions);
+        } else {
+            //设置视图代理对象为this.proxy
+            this.viewProxy = this.proxy;
+        }
     }
 
     /**
@@ -267,8 +275,18 @@ class BrowserSyncMiddleware {
      */
     doProxyHttpRequest(req, res) {
         if (this.isRemotable(req)) {
+            let route = this.dev.routes.matchByRequest(req);
+            let mode = this.getRouteMode(route);
             this.dev.emit('onProxy', req, res);
-            this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+            switch (mode) {
+                case 'view':
+                    this.viewProxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+                    break;
+                default:
+                    this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+                    break;
+            }
+
         } else {
             this.onProxyRespnoseEnd(null, req, res);
         }
@@ -285,6 +303,16 @@ class BrowserSyncMiddleware {
             content = content.replace(reg, "/");
         }
         return this.wrap(content);
+    }
+
+    /**
+     * 创建一个数据代理
+     */
+    createProxy(options) {
+        let proxy = httpProxy.createProxyServer(options);
+        proxy.on("proxyRes", (...args) => this.onProxyResponse(...args));
+        proxy.on("error", (...args) => this.onProxyResponseError(...args));
+        return proxy;
     }
 
     /**

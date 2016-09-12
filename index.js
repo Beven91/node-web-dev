@@ -21,6 +21,7 @@
     },
     proxy: {
         enable:true,//是否启用代理
+        viewTarget:'',//视图接口数据代理地址 可以不设置，不设置情况下以target为准
         target: '' //mock api的url地址 其他参见 http-proxy
     },
     local: {

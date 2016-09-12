@@ -184,7 +184,7 @@ class BrowserSyncMiddleware {
         try {
             let data = this.getJson(content, route);
             if (!data && this.options.mode == 'online') {
-                this.doResponse(this.doOverride(content), 'text/html');
+                this.doResponse(this.doOverride(content),res, 'text/html');
             } else {
                 this.doCompileViewResponse(route, data, res);
             }

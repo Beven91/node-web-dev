@@ -62,7 +62,8 @@
             "index": "/", 
         },
         proxy: {
-            target: 'http://10.21.11.161:8010' 
+            target: 'http://10.21.11.161:8010',
+            viewTarget:'http://10.21.11.161:8020'
         },
         local: {
             local: 'auto', 
@@ -89,7 +90,10 @@
     * **server.files**  要监听的文件或者目录，文件改变时，会自动同步通常用于css或者js
                         例如:['../webapp/**/*.css', '../webapp/**/*.js']。
     * **server.index**  网站默认启动路径 例如: /
-    * **server.proxy**  mock接口服务器地址，详细设置参照: [http-proxy](https://github.com/nodejitsu/node-http-proxy "http-proxy")
+   
+  * **proxy**
+    * **proxy.target**  mock接口服务器地址，详细设置参照: [http-proxy](https://github.com/nodejitsu/node-http-proxy "http-proxy")
+    * **proxy.viewTarget** 本地视图route( {view:'xxx'})的代理接口地址，默认可以不填写，不填写情况统一使用target
 
 * **local**  
   * **local.mode**     本地mock模式 'online'-->  所有接口使用在线数据，'auto'-->优先从代理获取数据,当获取失败，使用本地路由定义的数据,'local'--> 所有接口都使用本地, 'existsLocal'--> 当在本地置有路由则使用本地的，否则使用在线的

@@ -109,5 +109,3 @@ module.exports = {
     DynamicViewProjectDev: DynamicViewProjectDev,
     Compiler: Compiler
 }
-
-new DevServerApp().start();

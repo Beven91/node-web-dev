@@ -89,7 +89,7 @@
     * **server.server** 前段静态资源网站服务器根目录 例如 "../webapp/"。
     * **server.files**  要监听的文件或者目录，文件改变时，会自动同步通常用于css或者js
                         例如:['../webapp/**/*.css', '../webapp/**/*.js']。
-    * **server.index**  网站默认启动路径 例如: /
+    * **server.indexReplace** 当进行代理访问时，默认将 "/" 使用indexReplace值访问代理服务器，不影响本地路由匹配
    
   * **proxy**
     * **proxy.target**  mock接口服务器地址，详细设置参照: [http-proxy](https://github.com/nodejitsu/node-http-proxy "http-proxy")
@@ -142,6 +142,17 @@
 
 * **onReady** 当mock服务启动后触发
 
+
+* **onProxy** 当mock请求代理服务器数据返回后触发
+
+
+ 	      proxyHost: 代理host地址
+              req: 当前http请求对象 ClientRequest
+              res: 当前http请求对应的返回对象 IncomingMessage
+ 		(proxyHost, req, res)=>{  
+                    	......
+                }
+                
 
 * **onResponse** 当mock请求代理服务器数据返回后触发
 

@@ -15,7 +15,7 @@ const middleware = require('./middleware/browsersync.middleware.js').middleware;
 const defaultsOptions = {
     "server": "", //服务器根目录
     "files": ["**/*.js", "**/*.css"], //要监听的文件或者目录，当该目录下文件改动，会自动同步通常用于css或者js
-    "index": "/", //网站默认启动路径 默认为 /
+    "indexReplace":"/"  //当代理数据时，默认访问/目录转向到indexReplace对应的url
 }
 
 
@@ -34,14 +34,19 @@ class ServerApp {
         let options = this.options;
         //browsersync
         this.browserSync = BrowserSync.create();
+        dev.indexReplace = options.indexReplace;
         // .init 启动服务器
         this.server = this.browserSync.init({
             server: options.server,
             files: options.files,
-            index: options.index,
+            index:options.index,
             port:options.port || 3000,
             middleware: (req, res, next) => middleware(req, res, next, dev)
-        }, () => dev.emit('onReady'));
+        }, () =>{
+             dev.externalUrl = this.server.getOption('urls').get('external');
+             dev.indexUrl = dev.externalUrl+"/"+options.index;
+             dev.emit('onReady');
+        });
     }
 
     /**

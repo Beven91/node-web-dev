@@ -43,6 +43,7 @@ class BrowserSyncMiddleware {
      */
     constructor(dev) {
         this.dev = dev;
+        this.indexReplace = dev.indexReplace;
         this.clientUrlDir = this.md5('node-web-dev-client');
         this.options = Object.assign({}, defaultOptions, dev.options.local);
         let proxyOptions = dev.options.proxy;
@@ -86,6 +87,7 @@ class BrowserSyncMiddleware {
      * @param res {IncomingMessage}对象
      */
     onProxyResponse(proxyRes, req, res) {
+         this.doIndexReplace(req,true);
         //修改pipe
         proxyRes.pipe = this.modifyProxyResponsePipe.bind(this, proxyRes, req, res);
     }
@@ -184,7 +186,7 @@ class BrowserSyncMiddleware {
         try {
             let data = this.getJson(content, route);
             if (!data && this.options.mode == 'online') {
-                this.doResponse(this.doOverride(content),res, 'text/html');
+                this.doResponse(this.doOverride(content), res, 'text/html');
             } else {
                 this.doCompileViewResponse(route, data, res);
             }
@@ -237,11 +239,40 @@ class BrowserSyncMiddleware {
      * @param data 返回给客户端的数据
      * @param res {IncomingMessage}对象
      */
-    doResponse(data, res, contentType = "text/html") {
-        if (!res._header) {
-            res.setHeader("content-type", contentType);
+    doResponse(data, res, contentType) {
+        if (!data) {
+            contentType = "text/html";
+            data = `
+            <html>
+               <head>
+                   <meta charset="UTF-8">
+                   <title>没有返回任何内容</title>
+               </head>
+               <body style="background:#f7f7f7">
+                    <div class="" style="width: 500px;margin: 80px auto;
+    border: 1px solid #f9b4b4;
+    padding: 40px 20px 20px 20px;
+    text-align: center;
+    background: #fcc;
+    font-size: 13px;
+    color: #b13030;
+    box-shadow: 1px 1px 3px #ecadad;">
+                    抱歉，没有返回任何内容，请确认代理是否访问了该地址
+                    response:
+                    ${(res._header || "").replace(/\n/g, '</br>')}
+                    </div>
+               </body>
+            </html>
+            `;
         }
-        res.write(data || "返回空内容？", "utf8");
+        if (contentType) {
+            if (!res._header) {
+                res.setHeader("content-type", contentType);
+            } else {
+                res._header = res._header.replace(/content-type\: .+/, 'content-type: ' + contentType);
+            }
+        }
+        res.write(data, "utf8");
         res.end();
     }
 
@@ -250,23 +281,33 @@ class BrowserSyncMiddleware {
      */
     doErrorResponse(data, res) {
         let content = data || "返回空内容？";
-        let htmls = [
-            '<html>',
-            '   <head>',
-            '       <meta charset="UTF-8">',
-            '       <title>compile error</title>',
-            '   </head>',
-            '   <body>',
-            '       <code style="white-space:pre;">',
-            content.replace(/\n/g, '</br>'),
-            '       </code>',
-            '   </body>',
-            '</html>'
-        ];
+        let htmls = `
+            <html>
+               <head>
+                   <meta charset="UTF-8">
+                   <title>compile error</title>
+               </head>
+               <body style="background:#f7f7f7">
+                   <code style="white-space:pre;color: #b13030;width: 800px;margin: 80px auto;
+    border: 1px solid #f9b4b4;
+    padding: 40px 20px 20px 20px;
+    text-align: center;
+    background: #fcc;
+    font-size: 13px;
+    box-shadow: 1px 1px 3px #ecadad;">
+                    ${content.replace(/\n/g, '</br>')},
+                   </code>
+               </body>
+            </html>
+        `
         if (!res._header) {
+            res.setHeader("content-type", "text/html");
             res.writeHead(500);
+        } else {
+            res._header = res._header.replace(/content-type\: \.+/, 'content-type: ' + contentType);
+            res._header = 'HTTP/1.1 500 ERROR' + res._header.split('\n').slice(1).join('\r\n');
         }
-        res.write(htmls.join(''), "utf8");
+        res.write(htmls, "utf8");
         res.end();
     }
 
@@ -277,16 +318,18 @@ class BrowserSyncMiddleware {
         if (this.isRemotable(req)) {
             let route = this.dev.routes.matchByRequest(req);
             let mode = this.getRouteMode(route);
-            this.dev.emit('onProxy', req, res);
+            let proxy = null;
             switch (mode) {
                 case 'view':
-                    this.viewProxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+                    proxy = this.viewProxy;
                     break;
                 default:
-                    this.proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+                    proxy = this.proxy;
                     break;
             }
-
+            this.dev.emit('onProxy', proxy.options.target, req, res);
+            this.doIndexReplace(req);
+            proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
         } else {
             this.onProxyRespnoseEnd(null, req, res);
         }
@@ -303,6 +346,17 @@ class BrowserSyncMiddleware {
             content = content.replace(reg, "/");
         }
         return this.wrap(content);
+    }
+
+    /**
+     * 处理 / Replace
+     * @param revert 是否为还原
+     */
+    doIndexReplace(req, revert) {
+        if (req.originalUrl == '/') {
+            req.originalUrl = revert ? '/' : this.indexReplace;
+            req.url = revert ? '/' : this.indexReplace;
+        }
     }
 
     /**

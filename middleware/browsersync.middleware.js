@@ -87,7 +87,7 @@ class BrowserSyncMiddleware {
      * @param res {IncomingMessage}对象
      */
     onProxyResponse(proxyRes, req, res) {
-         this.doIndexReplace(req,true);
+        this.doIndexReplace(req, true);
         //修改pipe
         proxyRes.pipe = this.modifyProxyResponsePipe.bind(this, proxyRes, req, res);
     }
@@ -250,16 +250,17 @@ class BrowserSyncMiddleware {
                </head>
                <body style="background:#f7f7f7">
                     <div class="" style="width: 500px;margin: 80px auto;
-    border: 1px solid #f9b4b4;
-    padding: 40px 20px 20px 20px;
-    text-align: center;
-    background: #fcc;
-    font-size: 13px;
-    color: #b13030;
-    box-shadow: 1px 1px 3px #ecadad;">
+                                border: 1px solid #f9b4b4;
+                                padding: 40px 20px 20px 20px;
+                                text-align: center;
+                                background: #fcc;
+                                font-size: 13px;
+                                color: #b13030;
+                                box-shadow: 1px 1px 3px #ecadad;"
+                    >
                     抱歉，没有返回任何内容，请确认代理是否访问了该地址
                     response:
-                    ${(res._header || "").replace(/\n/g, '</br>')}
+                    ${(res._header || "").replace(/\n/g, '<p style="padding:0px;margin:3px;"></p>')}
                     </div>
                </body>
             </html>
@@ -288,15 +289,18 @@ class BrowserSyncMiddleware {
                    <title>compile error</title>
                </head>
                <body style="background:#f7f7f7">
-                   <code style="white-space:pre;color: #b13030;width: 800px;margin: 80px auto;
-    border: 1px solid #f9b4b4;
-    padding: 40px 20px 20px 20px;
-    text-align: center;
-    background: #fcc;
-    font-size: 13px;
-    box-shadow: 1px 1px 3px #ecadad;">
-                    ${content.replace(/\n/g, '</br>')},
-                   </code>
+                   <div style="olor: #b13030;
+                    width: 800px;
+                    margin: 80px auto;
+                    border: 1px solid #f9b4b4;
+                    padding: 40px 20px 20px 20px;
+                    text-align: left;
+                    background: #fcc;
+                    font-size: 13px;
+                    box-shadow: 1px 1px 3px #ecadad;"
+                    >
+                    ${content.replace(/\n/g, '<p style="padding:0px;margin:2px;"></p>')},
+                   </div>
                </body>
             </html>
         `

@@ -100,7 +100,7 @@ class BrowserSyncMiddleware {
      */
     modifyProxyResponsePipe(proxyRes, req, res) {
         let content = "";
-        proxyRes.on('data', (result) => (content = content + result)).on('end', (r) => this.onProxyRespnoseEnd(content,proxyRes, req, res));
+        proxyRes.on('data', (result) => (content = content + result)).on('end', (r) => this.onProxyRespnoseEnd(content, proxyRes, req, res));
     }
 
     /**
@@ -110,7 +110,7 @@ class BrowserSyncMiddleware {
      * @param req {ClientRequest}对象
      * @param res {IncomingMessage}对象
      */
-    onProxyRespnoseEnd(content,proxyRes, req, res) {
+    onProxyRespnoseEnd(content, proxyRes, req, res) {
         let next = req.originMiddlewareChain;
         let pathname = req.originalUrl.split('?')[0];
         let route = this.dev.routes.matchByRequest(req);
@@ -118,7 +118,7 @@ class BrowserSyncMiddleware {
             route: route,
             routeContainer: this.dev.routes
         };
-        this.dev.emit('onResponse', content,proxyRes, req, res);
+        this.dev.emit('onResponse', content, proxyRes, req, res);
         this.dev.emit('match', context, pathname, req, res);
         route = context.route;
         let mode = this.getRouteMode(route)
@@ -218,7 +218,7 @@ class BrowserSyncMiddleware {
             throw new Error("无法编译文件${view} 没有对应类型(${path.extname(view)})的编译器")
         }
         this.dev.emit('dataWrap', context);
-        compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(err, res) : this.doResponse(this.wrap(html), res, 'text/html'));
+        compiler.compile(view, context.data, (err, html) => err ? this.doErrorResponse(html, res) : this.doResponse(this.wrap(html), res, 'text/html'));
     }
 
     /**
@@ -283,28 +283,30 @@ class BrowserSyncMiddleware {
      */
     doErrorResponse(data, res) {
         let content = data || "返回空内容？";
-        let htmls = `
-            <html>
-               <head>
-                   <meta charset="UTF-8">
-                   <title>compile error</title>
-               </head>
-               <body style="background:#f7f7f7">
-                   <div style="olor: #b13030;
-                    width: 800px;
-                    margin: 80px auto;
-                    border: 1px solid #f9b4b4;
-                    padding: 40px 20px 20px 20px;
-                    text-align: left;
-                    background: #fcc;
-                    font-size: 13px;
-                    box-shadow: 1px 1px 3px #ecadad;"
-                    >
-                    ${content.replace(/\n/g, '<p style="padding:0px;margin:2px;"></p>')},
-                   </div>
-               </body>
-            </html>
-        `
+        if (data && data.indexOf("<html") < 0) {
+            let htmls = `
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>compile error</title>
+                </head>
+                <body style="background:#f7f7f7">
+                    <div style="olor: #b13030;
+                        width: 800px;
+                        margin: 80px auto;
+                        border: 1px solid #f9b4b4;
+                        padding: 40px 20px 20px 20px;
+                        text-align: left;
+                        background: #fcc;
+                        font-size: 13px;
+                        box-shadow: 1px 1px 3px #ecadad;"
+                        >
+                        ${content.replace(/\n/g, '<p style="padding:0px;margin:2px;"></p>')},
+                    </div>
+                </body>
+                </html>
+            `
+        }
         if (!res._header) {
             res.setHeader("content-type", "text/html");
             res.writeHead(500);
@@ -359,7 +361,7 @@ class BrowserSyncMiddleware {
      */
     doIndexReplace(req, revert) {
         if (req.originalUrl == '/' || req.doReplace) {
-            req.doReplace  =true;
+            req.doReplace = true;
             req.originalUrl = revert ? '/' : this.indexReplace;
             req.url = revert ? '/' : this.indexReplace;
         }

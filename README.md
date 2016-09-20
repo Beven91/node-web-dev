@@ -146,9 +146,9 @@
 * **onProxy** 当mock请求代理服务器数据返回后触发
 
 
- 	      proxyHost: 代理host地址
-              req: 当前http请求对象 ClientRequest
-              res: 当前http请求对应的返回对象 IncomingMessage
+		proxyHost: 代理host地址
+		req: 当前http请求对象 ClientRequest
+		res: 当前http请求对应的返回对象 IncomingMessage
  		(proxyHost, req, res)=>{  
                     	......
                 }
@@ -158,9 +158,10 @@
 
 
  		content: 返回的内容string
-              req: 当前http请求对象 ClientRequest
-              res: 当前http请求对应的返回对象 IncomingMessage
- 		(content, req, res)=>{  
+		proxyRes 代理response
+		req: 当前http请求对象 ClientRequest
+		res: 当前http请求对应的返回对象 IncomingMessage
+ 		(content,proxyRes, req, res)=>{  
                     	......
                 }
                 
@@ -169,10 +170,10 @@
 * **match**  用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
 
 
-        		context: { route:默认匹配的路由,routeContainer: 路由容器}
-               pathname: 当前请求pathname
-                    req: 当前http请求对象 ClientRequest
-                    res: 当前http请求对应的返回对象 IncomingMessage
+		context: { route:默认匹配的路由,routeContainer: 路由容器}
+		pathname: 当前请求pathname
+		req: 当前http请求对象 ClientRequest
+		res: 当前http请求对应的返回对象 IncomingMessage
                 (context, pathname, req, res)=>{
                     	//通过复写context.route来重新定义当前匹配到的路由
                     	context.route  ={
@@ -188,22 +189,22 @@
 * **error**  当mock请求代理服务器出现异常时触发
 
 
-        	    	error: 错误消息
-                      req: 当前http请求对象 ClientRequest
-                      res: 当前http请求对应的返回对象 IncomingMessage
-                    (error, req, res)=>{
+		error: 错误消息
+		req: 当前http请求对象 ClientRequest
+		res: 当前http请求对应的返回对象 IncomingMessage
+		(error, req, res)=>{
                     
-                    }
+		}
                       
         
         
 * **dataWrap** 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
 
 
-                context: {data:...}
-        	    (context)=>{
-        	    	context.data.other  ={.....};
-        	    }
+		context: {data:...}
+		(context)=>{
+			context.data.other  ={.....};
+		}
 
 ### 八、定制编译器
 

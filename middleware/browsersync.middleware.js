@@ -100,16 +100,17 @@ class BrowserSyncMiddleware {
      */
     modifyProxyResponsePipe(proxyRes, req, res) {
         let content = "";
-        proxyRes.on('data', (result) => (content = content + result)).on('end', (r) => this.onProxyRespnoseEnd(content, req, res));
+        proxyRes.on('data', (result) => (content = content + result)).on('end', (r) => this.onProxyRespnoseEnd(content,proxyRes, req, res));
     }
 
     /**
      * 当代理response返回数据完毕 这里会进行mock数据组装，并且返回对应数据或者视图
      * @param content 返回正文数据
+     * @param proxyRes 代理response
      * @param req {ClientRequest}对象
      * @param res {IncomingMessage}对象
      */
-    onProxyRespnoseEnd(content, req, res) {
+    onProxyRespnoseEnd(content,proxyRes, req, res) {
         let next = req.originMiddlewareChain;
         let pathname = req.originalUrl.split('?')[0];
         let route = this.dev.routes.matchByRequest(req);
@@ -117,7 +118,7 @@ class BrowserSyncMiddleware {
             route: route,
             routeContainer: this.dev.routes
         };
-        this.dev.emit('onResponse', content, req, res);
+        this.dev.emit('onResponse', content,proxyRes, req, res);
         this.dev.emit('match', context, pathname, req, res);
         route = context.route;
         let mode = this.getRouteMode(route)

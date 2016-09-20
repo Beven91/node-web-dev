@@ -283,8 +283,9 @@ class BrowserSyncMiddleware {
      */
     doErrorResponse(data, res) {
         let content = data || "返回空内容？";
-        if (data && data.indexOf("<html") < 0) {
-            let htmls = `
+        let htmls = content;
+        if (htmls && htmls.indexOf("<html") < 0) {
+            htmls = `
                 <html>
                 <head>
                     <meta charset="UTF-8">
@@ -311,8 +312,8 @@ class BrowserSyncMiddleware {
             res.setHeader("content-type", "text/html");
             res.writeHead(500);
         } else {
-            res._header = res._header.replace(/content-type\: \.+/, 'content-type: text/html');
-            res._header = 'HTTP/1.1 500 ERROR' + res._header.split('\n').slice(1).join('\r\n');
+            res._header = res._header.replace(/content-type\: .+/, 'content-type: text/html');
+            res._header = 'HTTP/1.1 500 ERROR\r\n' + res._header.split('\r\n').slice(1).join('\r\n');
         }
         res.write(htmls, "utf8");
         res.end();

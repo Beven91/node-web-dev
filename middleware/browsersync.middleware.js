@@ -311,7 +311,7 @@ class BrowserSyncMiddleware {
             res.setHeader("content-type", "text/html");
             res.writeHead(500);
         } else {
-            res._header = res._header.replace(/content-type\: \.+/, 'content-type: ' + contentType);
+            res._header = res._header.replace(/content-type\: \.+/, 'content-type: text/html');
             res._header = 'HTTP/1.1 500 ERROR' + res._header.split('\n').slice(1).join('\r\n');
         }
         res.write(htmls, "utf8");

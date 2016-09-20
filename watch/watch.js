@@ -35,12 +35,14 @@ class DevWatch {
      */
     onChanged(filepath) {
         if (this.dev.recordList.indexOf(filepath) < 0) {
+            require('path').relative(this.dev.options.server.server,filepath)
             let routes = this.dev.routes;
             let route = routes.findByChangeFile(filepath);
             console.log(`文件:${filepath} 已改变`);
             if (route && route.view) {
                 console.log(`找到对应路由${route.url},开始重定向到对应路由`);
-                this.dev.serverApp.redirect(route.url);
+                let url = route.staticUrl || route.url.replace("\\d+","1");
+                this.dev.serverApp.redirect(url);
             } else {
                 this.dev.serverApp.locationReload();
             }

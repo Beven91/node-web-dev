@@ -50,12 +50,18 @@ class RouteContainer {
      */
     findByChangeFile(file) {
         file = file || "";
-        let ext = (v) => path.extname(v);
+        let ext = (v) => v && path.extname(v);
         let normalize = (v) => (v || "").replace(/\//g, '\\');
         let normalize2 = (v) => (v || "").replace(ext(v), ".js").replace(/\/|\\\\/g, "-");
-        let contains = (v) => file.indexOf(normalize(v)) > -1;
-        let contains2 = (v) => file.indexOf(normalize2(v)) > -1;
-        return this.routes.find((r) => contains(r.mock) || contains2(r.view));
+        let containsView = (v) => file.indexOf(normalize(v.view || "______")) > -1;
+        let containsMock = (v) => file.indexOf(normalize2(v.mock || "______")) > -1;
+        let sortView = (a,b)=>(a.view||"").length<(b.view||"").length?1:-1;
+        let sortMock = (a,b)=>(a.mock||"").length<(b.mock||"").length?1:-1;
+        let containsHandler = ext(file) != ".js" ? containsView : containsMock;
+        let sortHandler = containsHandler==containsView?sortView:sortMock;
+        let filters = this.routes.filter((r) => containsHandler(r));
+        filters = filters.sort(sortHandler);
+        return filters[0];
     }
 
     /**

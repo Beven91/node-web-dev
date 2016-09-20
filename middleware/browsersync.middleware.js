@@ -357,7 +357,8 @@ class BrowserSyncMiddleware {
      * @param revert 是否为还原
      */
     doIndexReplace(req, revert) {
-        if (req.originalUrl == '/') {
+        if (req.originalUrl == '/' || req.doReplace) {
+            req.doReplace  =true;
             req.originalUrl = revert ? '/' : this.indexReplace;
             req.url = revert ? '/' : this.indexReplace;
         }

@@ -90,7 +90,11 @@ class DynamicViewProjectDev {
      * @param parameterN ... 参数N
      */
     emit(name, ...args) {
-        return this.emitter.emit(name, ...args);
+        try{
+            return this.emitter.emit(name, ...args);
+        }catch(ex){
+            console.error(ex);
+        }
     }
 
 

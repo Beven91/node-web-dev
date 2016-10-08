@@ -143,11 +143,23 @@ class BrowserSyncMiddleware {
      */
     onProxyResponseError(error, req, res) {
         this.dev.emit('error', error, req, res);
-        if (this.options.local || this.options.auto) {
-            this.onProxyRespnoseEnd(null, req, res);
+        var mode = this.options.mode;
+        var proxyRes = this.createProxyRes(error.code,error.message+' 转为本地数据',req);
+        this.doIndexReplace(req, true);
+        if(['auto','local'].indexOf(mode)>=0) {
+            this.onProxyRespnoseEnd(null,proxyRes, req, res);
         } else {
             this.doErrorResponse(error.stack, res);
         }
+    }
+
+    /**
+     * 创建一个空的proxyRes
+     */
+    createProxyRes(statusCode,statusMessage,req){
+        return {
+            statusCode,statusMessage,req
+        };
     }
 
 
@@ -337,9 +349,10 @@ class BrowserSyncMiddleware {
             }
             this.dev.emit('onProxy', proxy.options.target, req, res);
             this.doIndexReplace(req);
-            proxy.web(req, res, {}, (ex) => this.onProxyResponseError(ex, req, res));
+            proxy.web(req, res, {}, (ex,a,b,c) => this.onProxyResponseError(ex,req, res));
         } else {
-            this.onProxyRespnoseEnd(null, req, res);
+            var proxyRes = this.createProxyRes('200','此接口无需使用代理',req);
+            this.onProxyRespnoseEnd(null,proxyRes, req, res);
         }
     }
 

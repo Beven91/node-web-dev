@@ -143,7 +143,7 @@ class BrowserSyncMiddleware {
      */
     onProxyResponseError(error, req, res) {
         this.dev.emit('error', error, req, res);
-        if (this.options.local) {
+        if (this.options.local || this.options.auto) {
             this.onProxyRespnoseEnd(null, req, res);
         } else {
             this.doErrorResponse(error.stack, res);

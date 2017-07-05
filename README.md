@@ -53,6 +53,7 @@
      
 ### 五、用例
 	
+```js	
      var DynamicViewProjectDev = require('node-web-dev').DynamicViewProjectDev;	
 	
      var options = {
@@ -82,7 +83,7 @@
       dev.on('dataWrap', (context) =>context.data.user={name:'ss',age:xxxx});
       
       dev.startup();
-      
+```      
 ### 六、参数解释
 
   * **server** 使用的是browser-sync服务
@@ -104,7 +105,7 @@
 
 * **route**     本地mock使用的路由装载js或者json
                 例如: './routes/route.js'
-
+```js
         module.exports =[
 	    {
 	        "url":"/",
@@ -131,7 +132,7 @@
 	    	"method":"POST",
 	        "view": "redirect:/item/999"
 	    }]          
-	
+```	
 	
 	
                      
@@ -169,7 +170,7 @@
         
 * **match**  用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
 
-
+```js
 		context: { route:默认匹配的路由,routeContainer: 路由容器}
 		pathname: 当前请求pathname
 		req: 当前http请求对象 ClientRequest
@@ -184,11 +185,11 @@
                     	}
                 }
                     
-        
+  ```      
         
 * **error**  当mock请求代理服务器出现异常时触发
 
-
+```js
 		error: 错误消息
 		req: 当前http请求对象 ClientRequest
 		res: 当前http请求对应的返回对象 IncomingMessage
@@ -196,20 +197,21 @@
                     
 		}
                       
-        
+ ```       
         
 * **dataWrap** 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
 
-
+```js
 		context: {data:...}
 		(context)=>{
 			context.data.other  ={.....};
 		}
+```	
 
 ### 八、定制编译器
 
 ES6:
-
+```js
          var Compiler = require('node-web-dev').Compiler;
          
          class JspCompiler extends Compiler{
@@ -227,7 +229,7 @@ ES6:
          //注册到编译容器
          Compiler.register(new JspCompiler());
          
-     
+ ```    
 
 ### 九、开源许可
 基于 [MIT License](http://zh.wikipedia.org/wiki/MIT_License) 开源，使用代码只需说明来源，或者引用 [license.txt](https://github.com/sofish/typo.css/blob/master/license.txt) 即可。

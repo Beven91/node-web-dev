@@ -1,5 +1,8 @@
 ## node-web-dev
 
+[![NPM version][npm-image]][npm-url]
+
+
 ### 一、简介
 
 一个用于在开发时前后端分离的工具，不需要启动后端网站服务，使用nodejs服务来mock请求，
@@ -42,47 +45,47 @@
     
 ### 三、环境要求
 
-    1. nodejs v6.2+  (目前使用es6语法所写，暂时不打算转换成es5)
-    
-    2. jdk  (在使用freemakre 需要依赖于jdk) 安装代价不大
+1. nodejs v6.2+  (目前使用es6语法所写，暂时不打算转换成es5)
+
+2. jdk  (在使用freemakre 需要依赖于jdk) 安装代价不大
     
     
 ### 四、都支持哪些动态视图编译?
 
-    目前仅支持freemarker的视图编译，后续部分会实现其他较为纯粹的动态视图
+目前仅支持freemarker的视图编译，后续部分会实现其他较为纯粹的动态视图
      
 ### 五、用例
 	
 ```js	
-     var DynamicViewProjectDev = require('node-web-dev').DynamicViewProjectDev;	
-	
-     var options = {
-        server: {
-            "server": "../webapp/", 
-            "files": ['../webapp/**/*.css', '../webapp/**/*.js'], 
-            "index": "/", 
-        },
-        proxy: {
-            target: 'http://10.21.11.161:8010',
-            viewTarget:'http://10.21.11.161:8020'
-        },
-        local: {
-            local: 'auto', 
-            record:true,
-            localDir: path.join(__dirname, '../../../mock/') 
-        },
-        projects: [
-            path.join(grunt.projectPath, '../account/src/main/webapp/WEB-INF/views/**/*.ftl'),
-            path.join(grunt.projectPath, '../search/src/main/resources/ftl/**/*.ftl'),
-        ],
-        route: path.join(__dirname, '../../../routes/pc.route.js')
-      }
-     
-      var dev = new DynamicViewProjectDev(options);
-      
-      dev.on('dataWrap', (context) =>context.data.user={name:'ss',age:xxxx});
-      
-      dev.startup();
+var DynamicViewProjectDev = require('node-web-dev').DynamicViewProjectDev;	
+
+var options = {
+server: {
+    "server": "../webapp/", 
+    "files": ['../webapp/**/*.css', '../webapp/**/*.js'], 
+    "index": "/", 
+},
+proxy: {
+    target: 'http://10.21.11.161:8010',
+    viewTarget:'http://10.21.11.161:8020'
+},
+local: {
+    local: 'auto', 
+    record:true,
+    localDir: path.join(__dirname, '../../../mock/') 
+},
+projects: [
+    path.join(grunt.projectPath, '../account/src/main/webapp/WEB-INF/views/**/*.ftl'),
+    path.join(grunt.projectPath, '../search/src/main/resources/ftl/**/*.ftl'),
+],
+route: path.join(__dirname, '../../../routes/pc.route.js')
+}
+
+var dev = new DynamicViewProjectDev(options);
+
+dev.on('dataWrap', (context) =>context.data.user={name:'ss',age:xxxx});
+
+dev.startup();
 ```      
 ### 六、参数解释
 
@@ -106,32 +109,32 @@
 * **route**     本地mock使用的路由装载js或者json
                 例如: './routes/route.js'
 ```js
-        module.exports =[
-	    {
-	        "url":"/",
-	        "view": "site/home.ftl",
-	        "dir": "websites",
-	        "method":"GET",
-	        "viewsDir": "./websites/src/main/web-inf/views"
-	    },
-	    {
-	    	"url":"/item/\\d+",
-	        "view": "item/item-info.ftl",
-	        "method":"GET",
-	        "dir": "websites",
-	        "viewsDir": "...."
-	    },
-	    {
-	    	"url":"/news/list",
-	    	"mock":"./mock/new-list.js",
-	    	"method":"POST",
-	    	"dir":"websites"
-	    },
-	    {
-	    	"url":"/do",
-	    	"method":"POST",
-	        "view": "redirect:/item/999"
-	    }]          
+module.exports =[
+    {
+	"url":"/",
+	"view": "site/home.ftl",
+	"dir": "websites",
+	"method":"GET",
+	"viewsDir": "./websites/src/main/web-inf/views"
+    },
+    {
+	"url":"/item/\\d+",
+	"view": "item/item-info.ftl",
+	"method":"GET",
+	"dir": "websites",
+	"viewsDir": "...."
+    },
+    {
+	"url":"/news/list",
+	"mock":"./mock/new-list.js",
+	"method":"POST",
+	"dir":"websites"
+    },
+    {
+	"url":"/do",
+	"method":"POST",
+	"view": "redirect:/item/999"
+    }]          
 ```	
 	
 	
@@ -147,89 +150,92 @@
 * **onProxy** 当mock请求代理服务器数据返回后触发
 
 
-		proxyHost: 代理host地址
-		req: 当前http请求对象 ClientRequest
-		res: 当前http请求对应的返回对象 IncomingMessage
- 		(proxyHost, req, res)=>{  
-                    	......
-                }
+proxyHost: 代理host地址
+req: 当前http请求对象 ClientRequest
+res: 当前http请求对应的返回对象 IncomingMessage
+(proxyHost, req, res)=>{  
+	......
+}
                 
 
 * **onResponse** 当mock请求代理服务器数据返回后触发
 
 
- 		content: 返回的内容string
-		proxyRes 代理response
-		req: 当前http请求对象 ClientRequest
-		res: 当前http请求对应的返回对象 IncomingMessage
- 		(content,proxyRes, req, res)=>{  
-                    	......
-                }
+content: 返回的内容string
+proxyRes 代理response
+req: 当前http请求对象 ClientRequest
+res: 当前http请求对应的返回对象 IncomingMessage
+(content,proxyRes, req, res)=>{  
+	......
+}
                 
         
         
 * **match**  用于自定义匹配请求对应的路由，如果不指定，则默认根据route.js注册路由的url匹配
 
 ```js
-		context: { route:默认匹配的路由,routeContainer: 路由容器}
-		pathname: 当前请求pathname
-		req: 当前http请求对象 ClientRequest
-		res: 当前http请求对应的返回对象 IncomingMessage
-                (context, pathname, req, res)=>{
-                    	//通过复写context.route来重新定义当前匹配到的路由
-                    	context.route  ={
-                    	    view:'sss.ftl',
-                    	    dir:'xxx',
-                    	    ....
-                    	    
-                    	}
-                }
+context: { route:默认匹配的路由,routeContainer: 路由容器}
+pathname: 当前请求pathname
+req: 当前http请求对象 ClientRequest
+res: 当前http请求对应的返回对象 IncomingMessage
+(context, pathname, req, res)=>{
+	//通过复写context.route来重新定义当前匹配到的路由
+	context.route  ={
+	    view:'sss.ftl',
+	    dir:'xxx',
+	    ....
+
+	}
+}
                     
   ```      
         
 * **error**  当mock请求代理服务器出现异常时触发
 
 ```js
-		error: 错误消息
-		req: 当前http请求对象 ClientRequest
-		res: 当前http请求对应的返回对象 IncomingMessage
-		(error, req, res)=>{
-                    
-		}
+error: 错误消息
+req: 当前http请求对象 ClientRequest
+res: 当前http请求对应的返回对象 IncomingMessage
+(error, req, res)=>{
+
+}
                       
  ```       
         
 * **dataWrap** 用于自定义mock数据处理，当需要对mock接口返回的数据进行额外处理可以使用此事件
 
 ```js
-		context: {data:...}
-		(context)=>{
-			context.data.other  ={.....};
-		}
+context: {data:...}
+(context)=>{
+	context.data.other  ={.....};
+}
 ```	
 
 ### 八、定制编译器
 
 ES6:
 ```js
-         var Compiler = require('node-web-dev').Compiler;
-         
-         class JspCompiler extends Compiler{
-         	
-         	constructor(){
-         	    super('.jsp');
-         	}
-         	
-         	compile(file,data,callback){
-         		......
-         		callback(error,results);
-         	}
-         }
-         
-         //注册到编译容器
-         Compiler.register(new JspCompiler());
+ var Compiler = require('node-web-dev').Compiler;
+
+ class JspCompiler extends Compiler{
+
+	constructor(){
+	    super('.jsp');
+	}
+
+	compile(file,data,callback){
+		......
+		callback(error,results);
+	}
+ }
+
+ //注册到编译容器
+ Compiler.register(new JspCompiler());
          
  ```    
 
 ### 九、开源许可
 基于 [MIT License](http://zh.wikipedia.org/wiki/MIT_License) 开源，使用代码只需说明来源，或者引用 [license.txt](https://github.com/sofish/typo.css/blob/master/license.txt) 即可。
+
+[npm-url]: https://www.npmjs.com/package/node-web-dev
+[npm-image]: https://img.shields.io/npm/v/node-web-dev.svg
